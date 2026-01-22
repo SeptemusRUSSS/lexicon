@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Lexicon — English Cards</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: linear-gradient(145deg, #1a1a2e 0%, #16162a 100%);
+            --accent-gold: #d4a574;
+            --accent-gold-light: #e8c9a0;
+            --accent-purple: #7c6aef;
+            --accent-purple-light: #9d8ff5;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --success: #4ade80;
+            --error: #f87171;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-purple);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: var(--accent-gold);
+            bottom: 20%;
+            left: -80px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: #4a9eff;
+            bottom: -50px;
+            right: 20%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Noise texture overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            padding-bottom: 100px;
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(20px + env(safe-area-inset-right));
+        }
+
+        /* Telegram WebApp specific */
+        body.tg-webapp {
+            padding-top: 0;
+        }
+
+        /* Prevent pull-to-refresh */
+        html, body {
+            overscroll-behavior: none;
+        }
+
+        /* Smooth scrolling on iOS */
+        .app-container {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .streak-badge .flame {
+            font-size: 16px;
+        }
+
+        .streak-count {
+            color: var(--accent-gold);
+        }
+
+        /* Stats section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-gold);
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Deck section */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .decks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .deck-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deck-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(212, 165, 116, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .deck-card:hover::before {
+            opacity: 1;
+        }
+
+        .deck-card:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-gold);
+        }
+
+        .deck-card:active {
+            transform: scale(0.98);
+        }
+
+        .deck-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .deck-icon.basic { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
+        .deck-icon.intermediate { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); }
+        .deck-icon.advanced { background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); }
+        .deck-icon.idioms { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+
+        .deck-info {
+            flex: 1;
+        }
+
+        .deck-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .deck-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .deck-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .deck-percent {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--glass);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* Flashcard area */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 280px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(145deg, #1e1e3a 0%, #1a1a35 100%);
+            border: 1px solid var(--accent-purple);
+            transform: rotateY(180deg);
+            box-shadow: 
+                0 20px 60px rgba(124, 106, 239, 0.2),
+                0 0 0 1px rgba(124, 106, 239, 0.3) inset;
+        }
+
+        .card-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .card-word {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .card-phonetic {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .card-translation {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .card-example {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        .card-example em {
+            color: var(--accent-purple-light);
+            font-style: normal;
+            font-weight: 500;
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
+        }
+
+        .action-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-wrong {
+            background: linear-gradient(135deg, #2a1a1a 0%, #1a0a0a 100%);
+            border: 2px solid var(--error);
+            color: var(--error);
+        }
+
+        .btn-wrong::before {
+            background: var(--error);
+            filter: blur(15px);
+        }
+
+        .btn-wrong:hover::before {
+            opacity: 0.3;
+        }
+
+        .btn-wrong:active {
+            transform: scale(0.9);
+        }
+
+        .btn-correct {
+            background: linear-gradient(135deg, #1a2a1a 0%, #0a1a0a 100%);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .btn-correct::before {
+            background: var(--success);
+            filter: blur(15px);
+        }
+
+        .btn-correct:hover::before {
+            opacity: 0.3;
+        }
+
+        .btn-correct:active {
+            transform: scale(0.9);
+        }
+
+        .btn-skip {
+            width: 48px;
+            height: 48px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        .btn-skip:hover {
+            border-color: var(--text-muted);
+            color: var(--text-secondary);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 12px 20px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(20px + env(safe-area-inset-right));
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        /* Mobile touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .deck-card:hover::before {
+                opacity: 0;
+            }
+            
+            .deck-card:active::before {
+                opacity: 1;
+            }
+            
+            .deck-card:hover {
+                transform: none;
+            }
+            
+            .deck-card:active {
+                transform: scale(0.98);
+            }
+            
+            .action-btn:hover::before {
+                opacity: 0;
+            }
+            
+            .action-btn:active::before {
+                opacity: 0.3;
+            }
+        }
+
+        /* Small screens */
+        @media (max-width: 380px) {
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .card-word {
+                font-size: 28px;
+            }
+            
+            .card-translation {
+                font-size: 26px;
+            }
+            
+            .flashcard {
+                height: 240px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .action-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+            
+            .btn-skip {
+                width: 42px;
+                height: 42px;
+            }
+        }
+
+        /* Large phones / small tablets */
+        @media (min-width: 420px) {
+            .flashcard {
+                height: 320px;
+            }
+            
+            .card-word {
+                font-size: 42px;
+            }
+            
+            .action-buttons {
+                gap: 30px;
+            }
+            
+            .action-btn {
+                width: 72px;
+                height: 72px;
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            color: var(--accent-gold);
+        }
+
+        .nav-item:hover {
+            background: var(--glass);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Settings view */
+        .settings-section {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .settings-section:nth-child(2) { animation-delay: 0.1s; }
+        .settings-section:nth-child(3) { animation-delay: 0.2s; }
+
+        .settings-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 15px;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle.active {
+            background: var(--accent-purple);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(22px);
+        }
+
+        /* Card count selector */
+        .card-count-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .count-btn {
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .count-btn.active {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: var(--bg-primary);
+            font-weight: 600;
+        }
+
+        /* Add word form */
+        .add-word-form {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(124, 106, 239, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+    <div class="noise"></div>
+
+    <div class="app-container">
+        <!-- Home View -->
+        <div id="home-view" class="view active">
+            <header class="header">
+                <div class="logo">
+                    <div class="logo-icon">📚</div>
+                    <span class="logo-text">Lexicon</span>
+                </div>
+                <div class="streak-badge">
+                    <span class="flame">🔥</span>
+                    <span class="streak-count" id="streak-count">0</span>
+                    <span>дней</span>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-words">0</div>
+                    <div class="stat-label">Всего слов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="learned-words">0</div>
+                    <div class="stat-label">Изучено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="today-words">0</div>
+                    <div class="stat-label">Сегодня</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Колоды</h2>
+            <div class="decks-container" id="decks-container">
+                <!-- Decks will be rendered here -->
+            </div>
+
+            <h2 class="section-title">Текущая карточка</h2>
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-face flashcard-front">
+                        <div class="card-category" id="card-category">Базовые</div>
+                        <div class="card-word" id="card-word">Hello</div>
+                        <div class="card-phonetic" id="card-phonetic">/həˈləʊ/</div>
+                        <div class="tap-hint">👆 Нажмите для перевода</div>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div class="card-category">Перевод</div>
+                        <div class="card-translation" id="card-translation">Привет</div>
+                        <div class="card-example" id="card-example"><em>Hello</em>, how are you today?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-wrong" id="btn-wrong" title="Не знаю">✕</button>
+                <button class="action-btn btn-skip" id="btn-skip" title="Пропустить">↷</button>
+                <button class="action-btn btn-correct" id="btn-correct" title="Знаю">✓</button>
+            </div>
+        </div>
+
+        <!-- Add Word View -->
+        <div id="add-view" class="view">
+            <header class="header">
+                <div class="logo">
+                    <div class="logo-icon">✨</div>
+                    <span class="logo-text">Новое слово</span>
+                </div>
+            </header>
+
+            <div class="add-word-form">
+                <div class="form-group">
+                    <label class="form-label">Слово на английском</label>
+                    <input type="text" class="form-input" id="input-word" placeholder="example">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Транскрипция</label>
+                    <input type="text" class="form-input" id="input-phonetic" placeholder="/ɪɡˈzæmpəl/">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Перевод</label>
+                    <input type="text" class="form-input" id="input-translation" placeholder="пример">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пример использования</label>
+                    <input type="text" class="form-input" id="input-example" placeholder="This is an example sentence.">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Колода</label>
+                    <select class="form-input" id="input-deck">
+                        <option value="basic">Базовые</option>
+                        <option value="intermediate">Средние</option>
+                        <option value="advanced">Продвинутые</option>
+                        <option value="idioms">Идиомы</option>
+                    </select>
+                </div>
+                <button class="submit-btn" id="add-word-btn">Добавить слово</button>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settings-view" class="view">
+            <header class="header">
+                <div class="logo">
+                    <div class="logo-icon">⚙️</div>
+                    <span class="logo-text">Настройки</span>
+                </div>
+            </header>
+
+            <div class="settings-section">
+                <h3 class="settings-title">Обучение</h3>
+                <div class="setting-row">
+                    <span class="setting-label">Карточек в день</span>
+                    <div class="card-count-selector">
+                        <button class="count-btn" data-count="10">10</button>
+                        <button class="count-btn active" data-count="20">20</button>
+                        <button class="count-btn" data-count="30">30</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Показывать транскрипцию</span>
+                    <div class="toggle active" id="toggle-phonetic"></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Показывать примеры</span>
+                    <div class="toggle active" id="toggle-examples"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="settings-title">Уведомления</h3>
+                <div class="setting-row">
+                    <span class="setting-label">Напоминания</span>
+                    <div class="toggle" id="toggle-notifications"></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Звуки</span>
+                    <div class="toggle active" id="toggle-sounds"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="settings-title">Данные</h3>
+                <div class="setting-row">
+                    <span class="setting-label">Экспорт прогресса</span>
+                    <button class="count-btn" id="export-btn">📤 Экспорт</button>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Сбросить прогресс</span>
+                    <button class="count-btn" id="reset-btn" style="border-color: var(--error); color: var(--error);">🗑 Сброс</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-view="home">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-item" data-view="add">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">Добавить</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Настройки</span>
+        </button>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            tg.setHeaderColor('#0a0a0f');
+            tg.setBackgroundColor('#0a0a0f');
+            document.body.classList.add('tg-webapp');
+            
+            // Disable vertical swipes to close (if supported)
+            if (tg.disableVerticalSwipes) {
+                tg.disableVerticalSwipes();
+            }
+            
+            // Enable closing confirmation
+            tg.enableClosingConfirmation();
+        }
+
+        // Haptic feedback helper
+        function haptic(type = 'light') {
+            if (tg?.HapticFeedback) {
+                switch(type) {
+                    case 'light':
+                        tg.HapticFeedback.impactOccurred('light');
+                        break;
+                    case 'medium':
+                        tg.HapticFeedback.impactOccurred('medium');
+                        break;
+                    case 'success':
+                        tg.HapticFeedback.notificationOccurred('success');
+                        break;
+                    case 'error':
+                        tg.HapticFeedback.notificationOccurred('error');
+                        break;
+                    case 'warning':
+                        tg.HapticFeedback.notificationOccurred('warning');
+                        break;
+                }
+            }
+        }
+
+        // App State
+        const state = {
+            words: [],
+            currentWordIndex: 0,
+            streak: 0,
+            todayLearned: 0,
+            settings: {
+                cardsPerDay: 20,
+                showPhonetic: true,
+                showExamples: true,
+                notifications: false,
+                sounds: true
+            },
+            decks: {
+                basic: { name: 'Базовые', icon: '📗', words: [] },
+                intermediate: { name: 'Средние', icon: '📘', words: [] },
+                advanced: { name: 'Продвинутые', icon: '📕', words: [] },
+                idioms: { name: 'Идиомы', icon: '📙', words: [] }
+            }
+        };
+
+        // Sample words
+        const sampleWords = [
+            { word: 'Serendipity', phonetic: '/ˌserənˈdɪpɪti/', translation: 'Счастливая случайность', example: 'Finding that book was pure <em>serendipity</em>.', deck: 'advanced', learned: false },
+            { word: 'Eloquent', phonetic: '/ˈeləkwənt/', translation: 'Красноречивый', example: 'She gave an <em>eloquent</em> speech.', deck: 'intermediate', learned: false },
+            { word: 'Peculiar', phonetic: '/pɪˈkjuːliə/', translation: 'Странный, необычный', example: 'He has a <em>peculiar</em> sense of humor.', deck: 'intermediate', learned: false },
+            { word: 'Ambiguous', phonetic: '/æmˈbɪɡjuəs/', translation: 'Двусмысленный', example: 'The message was <em>ambiguous</em>.', deck: 'advanced', learned: false },
+            { word: 'Break a leg', phonetic: '/breɪk ə leɡ/', translation: 'Удачи! (пожелание)', example: '<em>Break a leg</em> at your audition!', deck: 'idioms', learned: false },
+            { word: 'Hello', phonetic: '/həˈləʊ/', translation: 'Привет', example: '<em>Hello</em>, how are you today?', deck: 'basic', learned: false },
+            { word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', translation: 'До свидания', example: 'She waved <em>goodbye</em> to her friends.', deck: 'basic', learned: false },
+            { word: 'Resilient', phonetic: '/rɪˈzɪliənt/', translation: 'Стойкий, выносливый', example: 'Children are remarkably <em>resilient</em>.', deck: 'advanced', learned: false },
+            { word: 'Piece of cake', phonetic: '/piːs əv keɪk/', translation: 'Пустяк, легкотня', example: 'The exam was a <em>piece of cake</em>.', deck: 'idioms', learned: false },
+            { word: 'Magnificent', phonetic: '/mæɡˈnɪfɪsnt/', translation: 'Великолепный', example: 'The view was absolutely <em>magnificent</em>.', deck: 'intermediate', learned: false }
+        ];
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('lexicon_state');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                Object.assign(state, parsed);
+            } else {
+                state.words = [...sampleWords];
+                organizeDecks();
+            }
+            updateUI();
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('lexicon_state', JSON.stringify(state));
+        }
+
+        // Organize words into decks
+        function organizeDecks() {
+            Object.keys(state.decks).forEach(key => {
+                state.decks[key].words = state.words.filter(w => w.deck === key);
+            });
+        }
+
+        // Update UI
+        function updateUI() {
+            organizeDecks();
+            
+            // Update stats
+            document.getElementById('total-words').textContent = state.words.length;
+            document.getElementById('learned-words').textContent = state.words.filter(w => w.learned).length;
+            document.getElementById('today-words').textContent = state.todayLearned;
+            document.getElementById('streak-count').textContent = state.streak;
+
+            // Render decks
+            renderDecks();
+
+            // Show current card
+            if (state.words.length > 0) {
+                showCard(state.currentWordIndex);
+            }
+        }
+
+        // Render decks
+        function renderDecks() {
+            const container = document.getElementById('decks-container');
+            container.innerHTML = '';
+
+            const deckClasses = {
+                basic: 'basic',
+                intermediate: 'intermediate',
+                advanced: 'advanced',
+                idioms: 'idioms'
+            };
+
+            Object.entries(state.decks).forEach(([key, deck]) => {
+                const total = deck.words.length;
+                const learned = deck.words.filter(w => w.learned).length;
+                const percent = total > 0 ? Math.round((learned / total) * 100) : 0;
+
+                const card = document.createElement('div');
+                card.className = 'deck-card';
+                card.innerHTML = `
+                    <div class="deck-icon ${deckClasses[key]}">${deck.icon}</div>
+                    <div class="deck-info">
+                        <div class="deck-name">${deck.name}</div>
+                        <div class="deck-meta">${total} слов</div>
+                    </div>
+                    <div class="deck-progress">
+                        <div class="deck-percent">${percent}%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+                card.addEventListener('click', () => selectDeck(key));
+                container.appendChild(card);
+            });
+        }
+
+        // Select deck
+        function selectDeck(deckKey) {
+            const deckWords = state.decks[deckKey].words;
+            if (deckWords.length > 0) {
+                const firstIndex = state.words.findIndex(w => w.deck === deckKey);
+                if (firstIndex !== -1) {
+                    state.currentWordIndex = firstIndex;
+                    showCard(state.currentWordIndex);
+                    showToast(`Выбрана колода: ${state.decks[deckKey].name}`, 'success');
+                }
+            } else {
+                showToast('В этой колоде пока нет слов', 'error');
+            }
+        }
+
+        // Show card
+        function showCard(index) {
+            if (state.words.length === 0) return;
+            
+            const word = state.words[index];
+            document.getElementById('card-word').textContent = word.word;
+            document.getElementById('card-phonetic').textContent = word.phonetic;
+            document.getElementById('card-translation').textContent = word.translation;
+            document.getElementById('card-example').innerHTML = word.example;
+            document.getElementById('card-category').textContent = state.decks[word.deck]?.name || 'Без категории';
+
+            // Reset flip state
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
+
+        // Flip card
+        document.getElementById('flashcard').addEventListener('click', function() {
+            this.classList.toggle('flipped');
+            haptic('light');
+        });
+
+        // Handle correct answer
+        document.getElementById('btn-correct').addEventListener('click', () => {
+            if (state.words.length === 0) return;
+            
+            haptic('success');
+            state.words[state.currentWordIndex].learned = true;
+            state.todayLearned++;
+            nextCard();
+            showToast('Отлично! +1 слово изучено', 'success');
+            saveState();
+            updateUI();
+        });
+
+        // Handle wrong answer
+        document.getElementById('btn-wrong').addEventListener('click', () => {
+            if (state.words.length === 0) return;
+            
+            haptic('error');
+            nextCard();
+            showToast('Попробуем ещё раз позже', 'error');
+        });
+
+        // Skip card
+        document.getElementById('btn-skip').addEventListener('click', () => {
+            nextCard();
+        });
+
+        // Next card
+        function nextCard() {
+            state.currentWordIndex = (state.currentWordIndex + 1) % state.words.length;
+            showCard(state.currentWordIndex);
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const view = item.dataset.view;
+                
+                haptic('light');
+                
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // Update views
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(`${view}-view`).classList.add('active');
+            });
+        });
+
+        // Add word
+        document.getElementById('add-word-btn').addEventListener('click', () => {
+            const word = document.getElementById('input-word').value.trim();
+            const phonetic = document.getElementById('input-phonetic').value.trim();
+            const translation = document.getElementById('input-translation').value.trim();
+            const example = document.getElementById('input-example').value.trim();
+            const deck = document.getElementById('input-deck').value;
+
+            if (!word || !translation) {
+                haptic('error');
+                showToast('Заполните слово и перевод', 'error');
+                return;
+            }
+
+            const newWord = {
+                word,
+                phonetic: phonetic || '',
+                translation,
+                example: example ? example.replace(new RegExp(word, 'gi'), `<em>${word}</em>`) : '',
+                deck,
+                learned: false
+            };
+
+            state.words.push(newWord);
+            saveState();
+            updateUI();
+
+            // Clear form
+            document.getElementById('input-word').value = '';
+            document.getElementById('input-phonetic').value = '';
+            document.getElementById('input-translation').value = '';
+            document.getElementById('input-example').value = '';
+
+            haptic('success');
+            showToast('Слово добавлено!', 'success');
+
+            // Switch to home
+            document.querySelector('.nav-item[data-view="home"]').click();
+        });
+
+        // Settings toggles
+        document.querySelectorAll('.toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+
+        // Card count selector
+        document.querySelectorAll('.count-btn[data-count]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.count-btn[data-count]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.settings.cardsPerDay = parseInt(btn.dataset.count);
+                saveState();
+            });
+        });
+
+        // Export
+        document.getElementById('export-btn')?.addEventListener('click', () => {
+            const data = JSON.stringify(state, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lexicon_export.json';
+            a.click();
+            showToast('Данные экспортированы', 'success');
+        });
+
+        // Reset
+        document.getElementById('reset-btn')?.addEventListener('click', () => {
+            if (confirm('Вы уверены? Весь прогресс будет потерян.')) {
+                localStorage.removeItem('lexicon_state');
+                state.words = [...sampleWords];
+                state.currentWordIndex = 0;
+                state.streak = 0;
+                state.todayLearned = 0;
+                updateUI();
+                showToast('Прогресс сброшен', 'success');
+            }
+        });
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Initialize
+        loadState();
+    </script>
+</body>
+</html>
