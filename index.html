@@ -474,6 +474,7 @@
             </div>
             <div class="section">
                 <div class="section-head">Данные</div>
+                <div class="row"><span>Синхронизация</span><button class="cnt-btn" id="sync">☁️ Синхр.</button></div>
                 <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
                 <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
             </div>
@@ -520,13 +521,55 @@
     ];
     
     const $=id=>document.getElementById(id);
-    const save=()=>localStorage.setItem('lex5',JSON.stringify(S));
-    const load=()=>{ 
-        const d=localStorage.getItem('lex5'); 
-        if(d) Object.assign(S,JSON.parse(d)); 
-        else { S.words=[...samples]; S.startDate=new Date().toISOString(); }
-        update(); 
-    };
+    const cloud = tg?.CloudStorage;
+    
+    // Сохранение в облако Telegram
+    function save(){
+        const data = JSON.stringify(S);
+        // Сохраняем локально как бэкап
+        localStorage.setItem('lex6',data);
+        // Сохраняем в облако Telegram
+        if(cloud){
+            cloud.setItem('lexicon_data', data, (err)=>{
+                if(err) console.log('Cloud save error:', err);
+            });
+        }
+    }
+    
+    // Загрузка из облака Telegram
+    function load(){
+        if(cloud){
+            cloud.getItem('lexicon_data', (err, value)=>{
+                if(!err && value){
+                    try {
+                        Object.assign(S, JSON.parse(value));
+                        update();
+                        toast('Синхронизировано ☁️','ok');
+                    } catch(e){
+                        loadLocal();
+                    }
+                } else {
+                    loadLocal();
+                }
+            });
+        } else {
+            loadLocal();
+        }
+    }
+    
+    // Локальная загрузка как фоллбэк
+    function loadLocal(){
+        const d = localStorage.getItem('lex6');
+        if(d){
+            try {
+                Object.assign(S, JSON.parse(d));
+            } catch(e){}
+        } else {
+            S.words = [...samples];
+            S.startDate = new Date().toISOString();
+        }
+        update();
+    }
     const byDeck=k=>S.words.filter(w=>w.deck===k);
     const study=()=>S.deck?S.words.filter(w=>w.deck===S.deck&&!w.learned):S.words.filter(w=>!w.learned);
     const todayKey=()=>new Date().toISOString().split('T')[0];
@@ -692,7 +735,36 @@
     document.querySelectorAll('.cnt-btn[data-n]').forEach(b=>b.onclick=()=>{ haptic(); document.querySelectorAll('.cnt-btn[data-n]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
     
     $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='lexicon.json'; a.click(); toast('Экспорт','ok'); });
-    $('reset')?.addEventListener('click',()=>{ if(confirm('Сбросить?')){ localStorage.removeItem('lex5'); location.reload(); }});
+    $('reset')?.addEventListener('click',()=>{ 
+        if(confirm('Сбросить все данные?')){ 
+            localStorage.removeItem('lex6'); 
+            if(cloud) cloud.removeItem('lexicon_data', ()=>{});
+            location.reload(); 
+        }
+    });
+    $('sync')?.addEventListener('click',()=>{
+        haptic();
+        if(cloud){
+            // Сначала сохраняем текущие данные
+            save();
+            // Потом загружаем из облака
+            cloud.getItem('lexicon_data', (err, value)=>{
+                if(!err && value){
+                    try {
+                        Object.assign(S, JSON.parse(value));
+                        update();
+                        toast('Синхронизировано ☁️','ok');
+                    } catch(e){
+                        toast('Ошибка синхронизации','err');
+                    }
+                } else {
+                    toast('Данные сохранены ☁️','ok');
+                }
+            });
+        } else {
+            toast('Откройте в Telegram','err');
+        }
+    });
     
     function toast(m,t='ok'){ const el=$('toast'); el.textContent=m; el.className=`toast ${t} show`; setTimeout(()=>el.classList.remove('show'),2500); }
     
