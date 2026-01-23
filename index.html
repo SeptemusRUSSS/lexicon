@@ -3,397 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Lexicon — English Cards</title>
+    <title>Lexicon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: linear-gradient(145deg, #1a1a2e 0%, #16162a 100%);
-            --accent-gold: #d4a574;
-            --accent-gold-light: #e8c9a0;
-            --accent-purple: #7c6aef;
-            --accent-purple-light: #9d8ff5;
-            --text-primary: #f5f5f7;
-            --text-secondary: #a0a0b0;
-            --text-muted: #606070;
-            --success: #4ade80;
-            --error: #f87171;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg: #0a0a0f;
+            --bg2: #12121a;
+            --card: linear-gradient(145deg, #1a1a2e, #16162a);
+            --gold: #d4a574;
+            --purple: #7c6aef;
+            --text: #f5f5f7;
+            --muted: #606070;
+            --green: #4ade80;
+            --red: #f87171;
+            --glass: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.08);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        html,body { overscroll-behavior:none; }
         body {
-            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            font-family: 'Manrope', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100dvh;
+            letter-spacing: -0.01em;
         }
-
-        /* Ambient background */
-        .ambient-bg {
+        .orb {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .ambient-orb {
-            position: absolute;
             border-radius: 50%;
             filter: blur(80px);
             opacity: 0.4;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .orb-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--accent-purple);
-            top: -100px;
-            right: -100px;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 250px;
-            height: 250px;
-            background: var(--accent-gold);
-            bottom: 20%;
-            left: -80px;
-            animation-delay: -7s;
-        }
-
-        .orb-3 {
-            width: 200px;
-            height: 200px;
-            background: #4a9eff;
-            bottom: -50px;
-            right: 20%;
-            animation-delay: -14s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        /* Noise texture overlay */
-        .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
             pointer-events: none;
-            z-index: 1;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 0;
         }
-
-        .app-container {
+        .orb1 { width:300px; height:300px; background:var(--purple); top:-100px; right:-100px; }
+        .orb2 { width:250px; height:250px; background:var(--gold); bottom:20%; left:-80px; }
+        
+        .app {
             position: relative;
-            z-index: 2;
-            min-height: 100vh;
-            min-height: 100dvh;
+            z-index: 1;
             padding: 20px;
             padding-top: calc(20px + env(safe-area-inset-top));
             padding-bottom: 100px;
-            padding-left: calc(20px + env(safe-area-inset-left));
-            padding-right: calc(20px + env(safe-area-inset-right));
+            min-height: 100dvh;
         }
-
-        /* Telegram WebApp specific */
-        body.tg-webapp {
-            padding-top: 0;
-        }
-
-        /* Prevent pull-to-refresh */
-        html, body {
-            overscroll-behavior: none;
-        }
-
-        /* Smooth scrolling on iOS */
-        .app-container {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Header */
+        
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            animation: fadeInDown 0.6s ease-out;
+            margin-bottom: 24px;
         }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
+        .profile-btn {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
+            font-size: 20px;
+            transition: transform 0.2s;
         }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .profile-btn:active { transform: scale(0.95); }
+        
+        /* Profile Modal */
+        .profile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
         }
-
-        .streak-badge {
+        .profile-overlay.open { opacity: 1; visibility: visible; }
+        
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 360px;
+            height: 100%;
+            background: var(--bg);
+            z-index: 201;
+            padding: 24px;
+            padding-top: calc(24px + env(safe-area-inset-top));
+            overflow-y: auto;
+            transition: right 0.3s ease;
+        }
+        .profile-overlay.open .profile-modal { right: 0; }
+        
+        .profile-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .streak-badge .flame {
-            font-size: 16px;
-        }
-
-        .streak-count {
-            color: var(--accent-gold);
-        }
-
-        /* Stats section */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 30px;
-            animation: fadeInUp 0.6s ease-out 0.1s both;
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
         }
-
-        .stat-card {
+        .profile-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .profile-info span {
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .profile-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
             background: var(--glass);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .profile-stat {
+            background: var(--glass);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 16px;
             text-align: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
         }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-gold);
-        }
-
-        .stat-value {
-            font-family: 'Playfair Display', serif;
+        .profile-stat-val {
             font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-weight: 800;
             margin-bottom: 4px;
         }
-
-        .stat-label {
+        .profile-stat-val.gold { color: var(--gold); }
+        .profile-stat-val.purple { color: var(--purple); }
+        .profile-stat-val.green { color: var(--green); }
+        .profile-stat-val.blue { color: #60a5fa; }
+        .profile-stat-lbl {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--muted);
+        }
+        
+        .profile-section {
+            margin-bottom: 24px;
+        }
+        .profile-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
-        /* Deck section */
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text-secondary);
-            animation: fadeInUp 0.6s ease-out 0.2s both;
+        
+        .week-chart {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 100px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
         }
-
-        .decks-container {
+        .week-day {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 30px;
-            animation: fadeInUp 0.6s ease-out 0.3s both;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
         }
-
-        .deck-card {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+        .week-bar-wrap {
+            width: 100%;
+            max-width: 24px;
+            height: 50px;
+            background: var(--bg2);
+            border-radius: 4px;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .week-bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--purple), var(--gold));
+            border-radius: 4px;
+            min-height: 2px;
+            transition: height 0.5s;
+        }
+        .week-bar.today { background: linear-gradient(180deg, var(--green), #22c55e); }
+        .week-lbl { font-size: 10px; color: var(--muted); }
+        .week-lbl.today { color: var(--green); font-weight: 600; }
+        
+        .streak-card {
+            background: linear-gradient(135deg, rgba(212,165,116,0.15), rgba(124,106,239,0.15));
+            border: 1px solid var(--gold);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             align-items: center;
             gap: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-
-        .deck-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(212, 165, 116, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .deck-card:hover::before {
-            opacity: 1;
-        }
-
-        .deck-card:hover {
-            transform: translateX(4px);
-            border-color: var(--accent-gold);
-        }
-
-        .deck-card:active {
-            transform: scale(0.98);
-        }
-
-        .deck-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+        .streak-icon { font-size: 40px; }
+        .streak-info h3 { font-size: 24px; font-weight: 800; color: var(--gold); }
+        .streak-info span { font-size: 14px; color: var(--muted); }
+        
+        /* Stats */
+        .stats {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            flex-shrink: 0;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-
-        .deck-icon.basic { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
-        .deck-icon.intermediate { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); }
-        .deck-icon.advanced { background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); }
-        .deck-icon.idioms { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
-
-        .deck-info {
+        .stat {
             flex: 1;
-        }
-
-        .deck-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .deck-meta {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .deck-progress {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-        }
-
-        .deck-percent {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--accent-gold);
-        }
-
-        .progress-bar {
-            width: 60px;
-            height: 4px;
             background: var(--glass);
-            border-radius: 2px;
-            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
         }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
-            border-radius: 2px;
-            transition: width 0.5s ease;
+        .stat-val { font-size:24px; font-weight:700; }
+        .stat-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; margin-top:2px; }
+        
+        /* Progress */
+        .progress {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
         }
-
-        /* Flashcard area */
-        .flashcard-container {
-            perspective: 1000px;
-            margin-bottom: 30px;
-            animation: fadeInUp 0.6s ease-out 0.4s both;
-        }
-
-        .flashcard {
+        .progress-top { display:flex; justify-content:space-between; margin-bottom:10px; }
+        .progress-lbl { font-size:13px; color:#a0a0b0; }
+        .progress-pct { font-size:14px; font-weight:700; color:var(--gold); }
+        .progress-bar { height:8px; background:var(--bg2); border-radius:4px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg, var(--gold), var(--purple)); border-radius:4px; transition:width 0.8s; }
+        
+        /* Flashcard */
+        .card-wrap { perspective:1000px; margin-bottom:24px; }
+        .card {
             width: 100%;
-            height: 280px;
+            height: 320px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s;
             cursor: pointer;
         }
-
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .flashcard-face {
+        .card.flipped { transform: rotateY(180deg); }
+        .card-face {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -406,90 +292,29 @@
             padding: 30px;
             text-align: center;
         }
-
-        .flashcard-front {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        .card-front {
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
-        .flashcard-back {
-            background: linear-gradient(145deg, #1e1e3a 0%, #1a1a35 100%);
-            border: 1px solid var(--accent-purple);
+        .card-back {
+            background: linear-gradient(145deg, #1e1e3a, #1a1a35);
+            border: 1px solid var(--purple);
             transform: rotateY(180deg);
-            box-shadow: 
-                0 20px 60px rgba(124, 106, 239, 0.2),
-                0 0 0 1px rgba(124, 106, 239, 0.3) inset;
         }
-
-        .card-category {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--accent-gold);
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .card-word {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            line-height: 1.2;
-        }
-
-        .card-phonetic {
-            font-size: 16px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .card-translation {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-        }
-
-        .card-example {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            max-width: 280px;
-        }
-
-        .card-example em {
-            color: var(--accent-purple-light);
-            font-style: normal;
-            font-weight: 500;
-        }
-
-        .tap-hint {
-            position: absolute;
-            bottom: 20px;
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Action buttons */
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.6s ease-out 0.5s both;
-        }
-
-        .action-btn {
-            width: 64px;
-            height: 64px;
+        .card-cat { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold); margin-bottom:20px; font-weight:600; }
+        .card-word { font-size:38px; font-weight:700; margin-bottom:12px; }
+        .card-phon { font-size:16px; color:var(--muted); font-style:italic; }
+        .card-trans { font-size:34px; font-weight:600; margin-bottom:16px; }
+        .card-ex { font-size:15px; color:#a0a0b0; max-width:280px; }
+        .card-ex em { color:#9d8ff5; font-style:normal; font-weight:500; }
+        .tap-hint { position:absolute; bottom:20px; font-size:12px; color:var(--muted); }
+        
+        /* Buttons */
+        .btns { display:flex; justify-content:center; gap:20px; }
+        .btn {
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -497,943 +322,645 @@
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            transition: all 0.3s ease;
-            position: relative;
+            transition: transform 0.2s;
         }
-
-        .action-btn::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-wrong {
-            background: linear-gradient(135deg, #2a1a1a 0%, #1a0a0a 100%);
-            border: 2px solid var(--error);
-            color: var(--error);
-        }
-
-        .btn-wrong::before {
-            background: var(--error);
-            filter: blur(15px);
-        }
-
-        .btn-wrong:hover::before {
-            opacity: 0.3;
-        }
-
-        .btn-wrong:active {
-            transform: scale(0.9);
-        }
-
-        .btn-correct {
-            background: linear-gradient(135deg, #1a2a1a 0%, #0a1a0a 100%);
-            border: 2px solid var(--success);
-            color: var(--success);
-        }
-
-        .btn-correct::before {
-            background: var(--success);
-            filter: blur(15px);
-        }
-
-        .btn-correct:hover::before {
-            opacity: 0.3;
-        }
-
-        .btn-correct:active {
-            transform: scale(0.9);
-        }
-
-        .btn-skip {
-            width: 48px;
-            height: 48px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            font-size: 20px;
-        }
-
-        .btn-skip:hover {
-            border-color: var(--text-muted);
-            color: var(--text-secondary);
-        }
-
-        /* Bottom navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--glass-border);
-            padding: 12px 20px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            padding-left: calc(20px + env(safe-area-inset-left));
-            padding-right: calc(20px + env(safe-area-inset-right));
+        .btn:active { transform:scale(0.9); }
+        .btn-no { background:linear-gradient(135deg, #2a1a1a, #1a0a0a); border:2px solid var(--red); color:var(--red); }
+        .btn-yes { background:linear-gradient(135deg, #1a2a1a, #0a1a0a); border:2px solid var(--green); color:var(--green); }
+        .btn-skip { width:52px; height:52px; background:var(--glass); border:1px solid var(--border); color:var(--muted); font-size:20px; align-self:center; }
+        
+        /* Decks */
+        .decks { display:flex; flex-direction:column; gap:12px; }
+        .deck {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px;
             display: flex;
-            justify-content: space-around;
-            z-index: 100;
-        }
-
-        /* Mobile touch improvements */
-        @media (hover: none) and (pointer: coarse) {
-            .deck-card:hover::before {
-                opacity: 0;
-            }
-            
-            .deck-card:active::before {
-                opacity: 1;
-            }
-            
-            .deck-card:hover {
-                transform: none;
-            }
-            
-            .deck-card:active {
-                transform: scale(0.98);
-            }
-            
-            .action-btn:hover::before {
-                opacity: 0;
-            }
-            
-            .action-btn:active::before {
-                opacity: 0.3;
-            }
-        }
-
-        /* Small screens */
-        @media (max-width: 380px) {
-            .logo-text {
-                font-size: 20px;
-            }
-            
-            .card-word {
-                font-size: 28px;
-            }
-            
-            .card-translation {
-                font-size: 26px;
-            }
-            
-            .flashcard {
-                height: 240px;
-            }
-            
-            .stat-value {
-                font-size: 24px;
-            }
-            
-            .action-btn {
-                width: 56px;
-                height: 56px;
-                font-size: 24px;
-            }
-            
-            .btn-skip {
-                width: 42px;
-                height: 42px;
-            }
-        }
-
-        /* Large phones / small tablets */
-        @media (min-width: 420px) {
-            .flashcard {
-                height: 320px;
-            }
-            
-            .card-word {
-                font-size: 42px;
-            }
-            
-            .action-buttons {
-                gap: 30px;
-            }
-            
-            .action-btn {
-                width: 72px;
-                height: 72px;
-            }
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 14px;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: none;
-            border: none;
-            color: var(--text-muted);
+            transition: transform 0.2s;
         }
-
-        .nav-item.active {
-            color: var(--accent-gold);
-        }
-
-        .nav-item:hover {
-            background: var(--glass);
-        }
-
-        .nav-icon {
+        .deck:active { transform:scale(0.98); }
+        .deck-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 24px;
         }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 500;
+        .deck-icon.basic { background:linear-gradient(135deg, #4ade80, #22c55e); }
+        .deck-icon.inter { background:linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .deck-icon.adv { background:linear-gradient(135deg, #f472b6, #ec4899); }
+        .deck-icon.idiom { background:linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .deck-info { flex:1; }
+        .deck-name { font-size:17px; font-weight:600; margin-bottom:4px; }
+        .deck-meta { font-size:13px; color:var(--muted); }
+        .deck-arr { font-size:20px; color:var(--muted); }
+        
+        /* Detail */
+        .detail-head { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+        .back-btn {
+            width:40px; height:40px;
+            border-radius:12px;
+            background:var(--glass);
+            border:1px solid var(--border);
+            color:var(--text);
+            font-size:20px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
-
-        /* Views */
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        /* Settings view */
-        .settings-section {
+        .back-btn:active { transform:scale(0.95); }
+        .detail-title { font-size:22px; font-weight:700; }
+        
+        .words { display:flex; flex-direction:column; gap:10px; }
+        .word-item {
             background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            animation: fadeInUp 0.6s ease-out both;
-        }
-
-        .settings-section:nth-child(2) { animation-delay: 0.1s; }
-        .settings-section:nth-child(3) { animation-delay: 0.2s; }
-
-        .settings-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text-secondary);
-        }
-
-        .setting-row {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--glass-border);
         }
-
-        .setting-row:last-child {
-            border-bottom: none;
-        }
-
-        .setting-label {
-            font-size: 15px;
-        }
-
-        .toggle {
-            width: 50px;
-            height: 28px;
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .toggle.active {
-            background: var(--accent-purple);
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: transform 0.3s ease;
-        }
-
-        .toggle.active::after {
-            transform: translateX(22px);
-        }
-
-        /* Card count selector */
-        .card-count-selector {
-            display: flex;
-            gap: 8px;
-        }
-
-        .count-btn {
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .count-btn.active {
-            background: var(--accent-gold);
-            border-color: var(--accent-gold);
-            color: var(--bg-primary);
+        .word-w { font-size:17px; font-weight:600; margin-bottom:2px; }
+        .word-t { font-size:14px; color:var(--muted); }
+        .word-status { width:10px; height:10px; border-radius:50%; background:var(--muted); }
+        .word-status.learned { background:var(--green); }
+        .word-status.learning { background:var(--purple); }
+        
+        .study-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
             font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
         }
-
-        /* Add word form */
-        .add-word-form {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
+        .study-btn:active { transform:scale(0.98); }
+        
+        /* Form */
+        .form-group { margin-bottom:18px; }
+        .form-lbl { display:block; font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
         .form-input {
             width: 100%;
-            padding: 14px 18px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--glass-border);
+            padding: 14px 16px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
             border-radius: 14px;
-            color: var(--text-primary);
+            color: var(--text);
             font-size: 16px;
             font-family: inherit;
-            transition: all 0.3s ease;
         }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 3px rgba(124, 106, 239, 0.2);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
+        .form-input:focus { outline:none; border-color:var(--purple); }
+        .form-input::placeholder { color:var(--muted); }
         .submit-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-purple) 100%);
+            background: linear-gradient(135deg, var(--gold), var(--purple));
             border: none;
             border-radius: 14px;
             color: white;
             font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
             font-family: inherit;
+            cursor: pointer;
         }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        .submit-btn:active { transform:scale(0.98); }
+        
+        /* Settings */
+        .section {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 14px;
         }
-
-        .submit-btn:active {
-            transform: scale(0.98);
+        .section-title { font-size:15px; font-weight:600; margin-bottom:14px; color:#a0a0b0; }
+        .row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+        .row:last-child { border-bottom:none; }
+        .toggle {
+            width:50px; height:28px;
+            background:var(--bg2);
+            border-radius:14px;
+            position:relative;
+            cursor:pointer;
+            transition:background 0.3s;
         }
-
-        /* Toast notification */
-        .toast {
+        .toggle.on { background:var(--purple); }
+        .toggle::after {
+            content:'';
+            position:absolute;
+            width:22px; height:22px;
+            background:white;
+            border-radius:50%;
+            top:3px; left:3px;
+            transition:transform 0.3s;
+        }
+        .toggle.on::after { transform:translateX(22px); }
+        .cnt-btn {
+            padding:8px 14px;
+            background:var(--bg2);
+            border:1px solid var(--border);
+            border-radius:10px;
+            color:#a0a0b0;
+            font-size:14px;
+            font-family:inherit;
+            cursor:pointer;
+        }
+        .cnt-btn.on { background:var(--gold); border-color:var(--gold); color:var(--bg); font-weight:600; }
+        .cnt-btn.danger { border-color:var(--red); color:var(--red); }
+        .cnt-sel { display:flex; gap:8px; }
+        
+        /* Nav */
+        .nav {
             position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-secondary);
-            border: 1px solid var(--glass-border);
-            padding: 14px 24px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 10px 16px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
         }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-family: inherit;
+            cursor: pointer;
         }
-
-        .toast.success {
-            border-color: var(--success);
-            color: var(--success);
+        .nav-item.on { color:var(--gold); }
+        .nav-icon { font-size:22px; }
+        .nav-lbl { font-size:10px; font-weight:500; }
+        
+        .view { display:none; }
+        .view.on { display:block; }
+        
+        .toast {
+            position:fixed;
+            bottom:100px;
+            left:50%;
+            transform:translateX(-50%) translateY(100px);
+            background:var(--bg2);
+            border:1px solid var(--border);
+            padding:14px 24px;
+            border-radius:14px;
+            font-size:14px;
+            font-weight:500;
+            opacity:0;
+            transition:all 0.4s;
+            z-index:1000;
         }
-
-        .toast.error {
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 18px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .empty-subtext {
-            font-size: 14px;
-            color: var(--text-muted);
-            opacity: 0.7;
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .toast.ok { border-color:var(--green); color:var(--green); }
+        .toast.err { border-color:var(--red); color:var(--red); }
+        
+        .empty { text-align:center; padding:60px 20px; }
+        .empty-icon { font-size:64px; margin-bottom:16px; }
+        .empty-text { font-size:18px; font-weight:600; margin-bottom:8px; }
+        .empty-sub { font-size:14px; color:var(--muted); }
+        
+        @media (max-width:380px) {
+            .card-word { font-size:30px; }
+            .card-trans { font-size:26px; }
+            .card { height:280px; }
+            .btn { width:60px; height:60px; font-size:24px; }
         }
     </style>
 </head>
 <body>
-    <div class="ambient-bg">
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-        <div class="ambient-orb orb-3"></div>
-    </div>
-    <div class="noise"></div>
-
-    <div class="app-container">
-        <!-- Home View -->
-        <div id="home-view" class="view active">
-            <header class="header">
-                <div class="logo">
-                    <div class="logo-icon">📚</div>
-                    <span class="logo-text">Lexicon</span>
-                </div>
-                <div class="streak-badge">
-                    <span class="flame">🔥</span>
-                    <span class="streak-count" id="streak-count">0</span>
-                    <span>дней</span>
-                </div>
-            </header>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="total-words">0</div>
-                    <div class="stat-label">Всего слов</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="learned-words">0</div>
-                    <div class="stat-label">Изучено</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="today-words">0</div>
-                    <div class="stat-label">Сегодня</div>
-                </div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    
+    <div class="app">
+        <!-- HOME -->
+        <div id="v-home" class="view on">
+            <div class="header">
+                <span class="page-title">Учить</span>
+                <button class="profile-btn" id="open-profile">👤</button>
             </div>
-
-            <h2 class="section-title">Колоды</h2>
-            <div class="decks-container" id="decks-container">
-                <!-- Decks will be rendered here -->
+            
+            <div class="stats">
+                <div class="stat"><div class="stat-val" id="learned">0</div><div class="stat-lbl">Выучено</div></div>
+                <div class="stat"><div class="stat-val" id="total">0</div><div class="stat-lbl">Всего</div></div>
+                <div class="stat"><div class="stat-val" id="today">0</div><div class="stat-lbl">Сегодня</div></div>
             </div>
-
-            <h2 class="section-title">Текущая карточка</h2>
-            <div class="flashcard-container">
-                <div class="flashcard" id="flashcard">
-                    <div class="flashcard-face flashcard-front">
-                        <div class="card-category" id="card-category">Базовые</div>
-                        <div class="card-word" id="card-word">Hello</div>
-                        <div class="card-phonetic" id="card-phonetic">/həˈləʊ/</div>
-                        <div class="tap-hint">👆 Нажмите для перевода</div>
+            
+            <div class="progress">
+                <div class="progress-top">
+                    <span class="progress-lbl">Общий прогресс</span>
+                    <span class="progress-pct" id="pct">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="fill" style="width:0%"></div></div>
+            </div>
+            
+            <div class="card-wrap">
+                <div class="card" id="card">
+                    <div class="card-face card-front">
+                        <div class="card-cat" id="c-cat">—</div>
+                        <div class="card-word" id="c-word">Добавь слова</div>
+                        <div class="card-phon" id="c-phon"></div>
+                        <div class="tap-hint">👆 Нажми для перевода</div>
                     </div>
-                    <div class="flashcard-face flashcard-back">
-                        <div class="card-category">Перевод</div>
-                        <div class="card-translation" id="card-translation">Привет</div>
-                        <div class="card-example" id="card-example"><em>Hello</em>, how are you today?</div>
+                    <div class="card-face card-back">
+                        <div class="card-cat">Перевод</div>
+                        <div class="card-trans" id="c-trans">—</div>
+                        <div class="card-ex" id="c-ex"></div>
                     </div>
                 </div>
             </div>
-
-            <div class="action-buttons">
-                <button class="action-btn btn-wrong" id="btn-wrong" title="Не знаю">✕</button>
-                <button class="action-btn btn-skip" id="btn-skip" title="Пропустить">↷</button>
-                <button class="action-btn btn-correct" id="btn-correct" title="Знаю">✓</button>
+            
+            <div class="btns">
+                <button class="btn btn-no" id="b-no">✕</button>
+                <button class="btn btn-skip" id="b-skip">↷</button>
+                <button class="btn btn-yes" id="b-yes">✓</button>
             </div>
         </div>
-
-        <!-- Add Word View -->
-        <div id="add-view" class="view">
-            <header class="header">
-                <div class="logo">
-                    <div class="logo-icon">✨</div>
-                    <span class="logo-text">Новое слово</span>
+        
+        <!-- DECKS -->
+        <div id="v-decks" class="view">
+            <div class="header">
+                <span class="page-title">Колоды</span>
+                <button class="profile-btn" id="open-profile-2">👤</button>
+            </div>
+            <div id="decks-list"><div class="decks" id="decks"></div></div>
+            <div id="deck-detail" style="display:none">
+                <div class="detail-head">
+                    <button class="back-btn" id="back">←</button>
+                    <span class="detail-title" id="d-title">Колода</span>
                 </div>
-            </header>
-
-            <div class="add-word-form">
-                <div class="form-group">
-                    <label class="form-label">Слово на английском</label>
-                    <input type="text" class="form-input" id="input-word" placeholder="example">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Транскрипция</label>
-                    <input type="text" class="form-input" id="input-phonetic" placeholder="/ɪɡˈzæmpəl/">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Перевод</label>
-                    <input type="text" class="form-input" id="input-translation" placeholder="пример">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Пример использования</label>
-                    <input type="text" class="form-input" id="input-example" placeholder="This is an example sentence.">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Колода</label>
-                    <select class="form-input" id="input-deck">
-                        <option value="basic">Базовые</option>
-                        <option value="intermediate">Средние</option>
-                        <option value="advanced">Продвинутые</option>
-                        <option value="idioms">Идиомы</option>
-                    </select>
-                </div>
-                <button class="submit-btn" id="add-word-btn">Добавить слово</button>
+                <div class="words" id="words"></div>
+                <button class="study-btn" id="study">📖 Учить эту колоду</button>
             </div>
         </div>
-
-        <!-- Settings View -->
-        <div id="settings-view" class="view">
-            <header class="header">
-                <div class="logo">
-                    <div class="logo-icon">⚙️</div>
-                    <span class="logo-text">Настройки</span>
-                </div>
-            </header>
-
-            <div class="settings-section">
-                <h3 class="settings-title">Обучение</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Карточек в день</span>
-                    <div class="card-count-selector">
-                        <button class="count-btn" data-count="10">10</button>
-                        <button class="count-btn active" data-count="20">20</button>
-                        <button class="count-btn" data-count="30">30</button>
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <span class="setting-label">Показывать транскрипцию</span>
-                    <div class="toggle active" id="toggle-phonetic"></div>
-                </div>
-                <div class="setting-row">
-                    <span class="setting-label">Показывать примеры</span>
-                    <div class="toggle active" id="toggle-examples"></div>
-                </div>
+        
+        <!-- ADD -->
+        <div id="v-add" class="view">
+            <div class="header">
+                <span class="page-title">Добавить</span>
+                <button class="profile-btn" id="open-profile-3">👤</button>
             </div>
-
-            <div class="settings-section">
-                <h3 class="settings-title">Уведомления</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Напоминания</span>
-                    <div class="toggle" id="toggle-notifications"></div>
-                </div>
-                <div class="setting-row">
-                    <span class="setting-label">Звуки</span>
-                    <div class="toggle active" id="toggle-sounds"></div>
-                </div>
+            <div class="form-group"><label class="form-lbl">Слово</label><input class="form-input" id="i-word" placeholder="example"></div>
+            <div class="form-group"><label class="form-lbl">Транскрипция</label><input class="form-input" id="i-phon" placeholder="/ɪɡˈzæmpəl/"></div>
+            <div class="form-group"><label class="form-lbl">Перевод</label><input class="form-input" id="i-trans" placeholder="пример"></div>
+            <div class="form-group"><label class="form-lbl">Пример</label><input class="form-input" id="i-ex" placeholder="This is an example."></div>
+            <div class="form-group">
+                <label class="form-lbl">Колода</label>
+                <select class="form-input" id="i-deck">
+                    <option value="basic">📗 Базовые</option>
+                    <option value="intermediate">📘 Средние</option>
+                    <option value="advanced">📕 Продвинутые</option>
+                    <option value="idioms">📙 Идиомы</option>
+                </select>
             </div>
-
-            <div class="settings-section">
-                <h3 class="settings-title">Данные</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Экспорт прогресса</span>
-                    <button class="count-btn" id="export-btn">📤 Экспорт</button>
-                </div>
-                <div class="setting-row">
-                    <span class="setting-label">Сбросить прогресс</span>
-                    <button class="count-btn" id="reset-btn" style="border-color: var(--error); color: var(--error);">🗑 Сброс</button>
-                </div>
+            <button class="submit-btn" id="add-btn">Добавить</button>
+        </div>
+        
+        <!-- SETTINGS -->
+        <div id="v-settings" class="view">
+            <div class="header">
+                <span class="page-title">Настройки</span>
+                <button class="profile-btn" id="open-profile-4">👤</button>
+            </div>
+            <div class="section">
+                <div class="section-title">Обучение</div>
+                <div class="row"><span>Карточек в день</span><div class="cnt-sel"><button class="cnt-btn" data-n="10">10</button><button class="cnt-btn on" data-n="20">20</button><button class="cnt-btn" data-n="30">30</button></div></div>
+                <div class="row"><span>Транскрипция</span><div class="toggle on" id="t-phon"></div></div>
+                <div class="row"><span>Примеры</span><div class="toggle on" id="t-ex"></div></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Уведомления</div>
+                <div class="row"><span>Напоминания</span><div class="toggle" id="t-notif"></div></div>
+                <div class="row"><span>Звуки</span><div class="toggle on" id="t-sound"></div></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Данные</div>
+                <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
+                <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
             </div>
         </div>
     </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-view="home">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Главная</span>
-        </button>
-        <button class="nav-item" data-view="add">
-            <span class="nav-icon">➕</span>
-            <span class="nav-label">Добавить</span>
-        </button>
-        <button class="nav-item" data-view="settings">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Настройки</span>
-        </button>
+    
+    <!-- PROFILE MODAL -->
+    <div class="profile-overlay" id="profile-overlay">
+        <div class="profile-modal">
+            <button class="profile-close" id="close-profile">✕</button>
+            
+            <div class="profile-header">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-info">
+                    <h2>Ученик</h2>
+                    <span id="p-start">Начал сегодня</span>
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                <div class="streak-card">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <h3 id="p-streak">0 дней</h3>
+                        <span>Текущая серия</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-val gold" id="p-total">0</div>
+                    <div class="profile-stat-lbl">Всего слов</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-val green" id="p-learned">0</div>
+                    <div class="profile-stat-lbl">Выучено</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-val purple" id="p-today">0</div>
+                    <div class="profile-stat-lbl">Сегодня</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-val blue" id="p-avg">0</div>
+                    <div class="profile-stat-lbl">В среднем/день</div>
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                <div class="profile-section-title">Активность за неделю</div>
+                <div class="week-chart" id="week-chart">
+                    <!-- Chart rendered by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <button class="nav-item on" data-v="home"><span class="nav-icon">🎴</span><span class="nav-lbl">Учить</span></button>
+        <button class="nav-item" data-v="decks"><span class="nav-icon">📂</span><span class="nav-lbl">Колоды</span></button>
+        <button class="nav-item" data-v="add"><span class="nav-icon">➕</span><span class="nav-lbl">Добавить</span></button>
+        <button class="nav-item" data-v="settings"><span class="nav-icon">⚙️</span><span class="nav-lbl">Настройки</span></button>
     </nav>
-
-    <!-- Toast -->
+    
     <div class="toast" id="toast"></div>
-
+    
     <script>
-        // Initialize Telegram WebApp
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
-            tg.setHeaderColor('#0a0a0f');
-            tg.setBackgroundColor('#0a0a0f');
-            document.body.classList.add('tg-webapp');
-            
-            // Disable vertical swipes to close (if supported)
-            if (tg.disableVerticalSwipes) {
-                tg.disableVerticalSwipes();
-            }
-            
-            // Enable closing confirmation
-            tg.enableClosingConfirmation();
+    const tg = window.Telegram?.WebApp;
+    if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); tg.disableVerticalSwipes?.(); }
+    const haptic = t => { if(!tg?.HapticFeedback)return; t==='ok'?tg.HapticFeedback.notificationOccurred('success'):t==='err'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred('light'); };
+    
+    const S = {
+        words: [],
+        idx: 0,
+        deck: null,
+        streak: 0,
+        today: 0,
+        startDate: null,
+        dailyStats: {},
+        decks: {
+            basic: {name:'Базовые', icon:'📗', cls:'basic'},
+            intermediate: {name:'Средние', icon:'📘', cls:'inter'},
+            advanced: {name:'Продвинутые', icon:'📕', cls:'adv'},
+            idioms: {name:'Идиомы', icon:'📙', cls:'idiom'}
         }
-
-        // Haptic feedback helper
-        function haptic(type = 'light') {
-            if (tg?.HapticFeedback) {
-                switch(type) {
-                    case 'light':
-                        tg.HapticFeedback.impactOccurred('light');
-                        break;
-                    case 'medium':
-                        tg.HapticFeedback.impactOccurred('medium');
-                        break;
-                    case 'success':
-                        tg.HapticFeedback.notificationOccurred('success');
-                        break;
-                    case 'error':
-                        tg.HapticFeedback.notificationOccurred('error');
-                        break;
-                    case 'warning':
-                        tg.HapticFeedback.notificationOccurred('warning');
-                        break;
-                }
-            }
+    };
+    
+    const samples = [
+        {word:'Hello', phon:'/həˈləʊ/', trans:'Привет', ex:'<em>Hello</em>, how are you?', deck:'basic', learned:false, rev:0},
+        {word:'Goodbye', phon:'/ɡʊdˈbaɪ/', trans:'До свидания', ex:'She waved <em>goodbye</em>.', deck:'basic', learned:false, rev:0},
+        {word:'Eloquent', phon:'/ˈeləkwənt/', trans:'Красноречивый', ex:'An <em>eloquent</em> speech.', deck:'intermediate', learned:false, rev:0},
+        {word:'Serendipity', phon:'/ˌserənˈdɪpɪti/', trans:'Счастливая случайность', ex:'It was <em>serendipity</em>.', deck:'advanced', learned:false, rev:0},
+        {word:'Break a leg', phon:'', trans:'Удачи!', ex:'<em>Break a leg</em>!', deck:'idioms', learned:false, rev:0}
+    ];
+    
+    const $=id=>document.getElementById(id);
+    const save=()=>localStorage.setItem('lex4',JSON.stringify(S));
+    const load=()=>{ 
+        const d=localStorage.getItem('lex4'); 
+        if(d) Object.assign(S,JSON.parse(d)); 
+        else { S.words=[...samples]; S.startDate=new Date().toISOString(); }
+        update(); 
+    };
+    const byDeck=k=>S.words.filter(w=>w.deck===k);
+    const study=()=>S.deck?S.words.filter(w=>w.deck===S.deck&&!w.learned):S.words.filter(w=>!w.learned);
+    const todayKey=()=>new Date().toISOString().split('T')[0];
+    
+    // Profile functions
+    function openProfile(){
+        haptic();
+        updateProfileStats();
+        $('profile-overlay').classList.add('open');
+    }
+    
+    function closeProfile(){
+        haptic();
+        $('profile-overlay').classList.remove('open');
+    }
+    
+    function updateProfileStats(){
+        const total = S.words.length;
+        const learned = S.words.filter(w=>w.learned).length;
+        
+        $('p-total').textContent = total;
+        $('p-learned').textContent = learned;
+        $('p-today').textContent = S.today;
+        $('p-streak').textContent = S.streak + ' дней';
+        
+        // Calculate average
+        const days = Object.keys(S.dailyStats).length || 1;
+        const totalLearned = Object.values(S.dailyStats).reduce((a,b)=>a+(b.learned||0),0);
+        $('p-avg').textContent = Math.round(totalLearned / days);
+        
+        // Start date
+        if(S.startDate){
+            const start = new Date(S.startDate);
+            const now = new Date();
+            const diffDays = Math.floor((now - start) / (1000*60*60*24));
+            if(diffDays === 0) $('p-start').textContent = 'Начал сегодня';
+            else if(diffDays === 1) $('p-start').textContent = 'Занимается 1 день';
+            else $('p-start').textContent = `Занимается ${diffDays} дней`;
         }
-
-        // App State
-        const state = {
-            words: [],
-            currentWordIndex: 0,
-            streak: 0,
-            todayLearned: 0,
-            settings: {
-                cardsPerDay: 20,
-                showPhonetic: true,
-                showExamples: true,
-                notifications: false,
-                sounds: true
-            },
-            decks: {
-                basic: { name: 'Базовые', icon: '📗', words: [] },
-                intermediate: { name: 'Средние', icon: '📘', words: [] },
-                advanced: { name: 'Продвинутые', icon: '📕', words: [] },
-                idioms: { name: 'Идиомы', icon: '📙', words: [] }
-            }
+        
+        // Week chart
+        renderWeekChart();
+    }
+    
+    function renderWeekChart(){
+        const c = $('week-chart');
+        c.innerHTML = '';
+        const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+        const today = new Date();
+        const data = [];
+        
+        for(let i=6; i>=0; i--){
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().split('T')[0];
+            const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
+            data.push({
+                name: days[dayIdx],
+                count: S.dailyStats[key]?.learned || 0,
+                isToday: i === 0
+            });
+        }
+        
+        const max = Math.max(...data.map(d=>d.count), 1);
+        
+        data.forEach(d=>{
+            const pct = (d.count / max) * 100;
+            const div = document.createElement('div');
+            div.className = 'week-day';
+            div.innerHTML = `
+                <div class="week-bar-wrap">
+                    <div class="week-bar ${d.isToday?'today':''}" style="height:${Math.max(pct,4)}%"></div>
+                </div>
+                <span class="week-lbl ${d.isToday?'today':''}">${d.name}</span>
+            `;
+            c.appendChild(div);
+        });
+    }
+    
+    function update(){
+        const t=S.words.length, l=S.words.filter(w=>w.learned).length, p=t?Math.round(l/t*100):0;
+        $('total').textContent=t;
+        $('learned').textContent=l;
+        $('today').textContent=S.today;
+        $('pct').textContent=p+'%';
+        $('fill').style.width=p+'%';
+        renderDecks();
+        showCard();
+    }
+    
+    function renderDecks(){
+        const c=$('decks'); c.innerHTML='';
+        Object.entries(S.decks).forEach(([k,d])=>{
+            const ws=byDeck(k), l=ws.filter(w=>w.learned).length;
+            const el=document.createElement('div');
+            el.className='deck';
+            el.innerHTML=`<div class="deck-icon ${d.cls}">${d.icon}</div><div class="deck-info"><div class="deck-name">${d.name}</div><div class="deck-meta">${ws.length} слов · ${l} выучено</div></div><div class="deck-arr">›</div>`;
+            el.onclick=()=>openDeck(k);
+            c.appendChild(el);
+        });
+    }
+    
+    function openDeck(k){
+        haptic(); S.deck=k;
+        $('decks-list').style.display='none';
+        $('deck-detail').style.display='block';
+        $('d-title').textContent=S.decks[k].name;
+        const c=$('words'); c.innerHTML='';
+        const ws=byDeck(k);
+        if(!ws.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Пусто</div><div class="empty-sub">Добавь слова</div></div>'; return; }
+        ws.forEach(w=>{
+            const st=w.learned?'learned':w.rev>0?'learning':'';
+            const el=document.createElement('div');
+            el.className='word-item';
+            el.innerHTML=`<div><div class="word-w">${w.word}</div><div class="word-t">${w.trans}</div></div><div class="word-status ${st}"></div>`;
+            c.appendChild(el);
+        });
+    }
+    
+    function closeDeck(){ haptic(); $('decks-list').style.display='block'; $('deck-detail').style.display='none'; S.deck=null; }
+    
+    function showCard(){
+        const ws=study();
+        if(!ws.length){ $('c-word').textContent='Всё выучено! 🎉'; $('c-phon').textContent=''; $('c-cat').textContent='—'; $('c-trans').textContent='Добавь новые'; $('c-ex').textContent=''; return; }
+        if(S.idx>=ws.length) S.idx=0;
+        const w=ws[S.idx];
+        $('c-word').textContent=w.word;
+        $('c-phon').textContent=w.phon||'';
+        $('c-cat').textContent=S.decks[w.deck]?.name||'—';
+        $('c-trans').textContent=w.trans;
+        $('c-ex').innerHTML=w.ex||'';
+        $('card').classList.remove('flipped');
+    }
+    
+    function next(){ const ws=study(); S.idx=(S.idx+1)%Math.max(ws.length,1); showCard(); }
+    function cur(){ const ws=study(); return ws.length?ws[S.idx]:null; }
+    
+    $('card').onclick=function(){ this.classList.toggle('flipped'); haptic(); };
+    
+    $('b-yes').onclick=()=>{
+        const w=cur(); if(!w)return;
+        haptic('ok');
+        const i=S.words.findIndex(x=>x.word===w.word&&x.deck===w.deck);
+        if(i>=0){ S.words[i].learned=true; S.words[i].rev++; }
+        S.today++;
+        
+        // Daily stats
+        const key = todayKey();
+        if(!S.dailyStats[key]) S.dailyStats[key] = {learned:0};
+        S.dailyStats[key].learned++;
+        
+        save(); next(); update();
+        toast('Отлично! ✓','ok');
+    };
+    
+    $('b-no').onclick=()=>{
+        const w=cur(); if(!w)return;
+        haptic('err');
+        const i=S.words.findIndex(x=>x.word===w.word&&x.deck===w.deck);
+        if(i>=0) S.words[i].rev++;
+        save(); next();
+        toast('Повторим','err');
+    };
+    
+    $('b-skip').onclick=()=>{ haptic(); next(); };
+    $('back').onclick=closeDeck;
+    $('study').onclick=()=>{ haptic('ok'); document.querySelector('[data-v="home"]').click(); toast(`Учим: ${S.decks[S.deck].name}`,'ok'); };
+    
+    document.querySelectorAll('.nav-item').forEach(n=>{
+        n.onclick=()=>{
+            haptic();
+            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
+            n.classList.add('on');
+            document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+            $('v-'+n.dataset.v).classList.add('on');
+            if(n.dataset.v!=='decks') closeDeck();
         };
-
-        // Sample words
-        const sampleWords = [
-            { word: 'Serendipity', phonetic: '/ˌserənˈdɪpɪti/', translation: 'Счастливая случайность', example: 'Finding that book was pure <em>serendipity</em>.', deck: 'advanced', learned: false },
-            { word: 'Eloquent', phonetic: '/ˈeləkwənt/', translation: 'Красноречивый', example: 'She gave an <em>eloquent</em> speech.', deck: 'intermediate', learned: false },
-            { word: 'Peculiar', phonetic: '/pɪˈkjuːliə/', translation: 'Странный, необычный', example: 'He has a <em>peculiar</em> sense of humor.', deck: 'intermediate', learned: false },
-            { word: 'Ambiguous', phonetic: '/æmˈbɪɡjuəs/', translation: 'Двусмысленный', example: 'The message was <em>ambiguous</em>.', deck: 'advanced', learned: false },
-            { word: 'Break a leg', phonetic: '/breɪk ə leɡ/', translation: 'Удачи! (пожелание)', example: '<em>Break a leg</em> at your audition!', deck: 'idioms', learned: false },
-            { word: 'Hello', phonetic: '/həˈləʊ/', translation: 'Привет', example: '<em>Hello</em>, how are you today?', deck: 'basic', learned: false },
-            { word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', translation: 'До свидания', example: 'She waved <em>goodbye</em> to her friends.', deck: 'basic', learned: false },
-            { word: 'Resilient', phonetic: '/rɪˈzɪliənt/', translation: 'Стойкий, выносливый', example: 'Children are remarkably <em>resilient</em>.', deck: 'advanced', learned: false },
-            { word: 'Piece of cake', phonetic: '/piːs əv keɪk/', translation: 'Пустяк, легкотня', example: 'The exam was a <em>piece of cake</em>.', deck: 'idioms', learned: false },
-            { word: 'Magnificent', phonetic: '/mæɡˈnɪfɪsnt/', translation: 'Великолепный', example: 'The view was absolutely <em>magnificent</em>.', deck: 'intermediate', learned: false }
-        ];
-
-        // Load state from localStorage
-        function loadState() {
-            const saved = localStorage.getItem('lexicon_state');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                Object.assign(state, parsed);
-            } else {
-                state.words = [...sampleWords];
-                organizeDecks();
-            }
-            updateUI();
-        }
-
-        // Save state to localStorage
-        function saveState() {
-            localStorage.setItem('lexicon_state', JSON.stringify(state));
-        }
-
-        // Organize words into decks
-        function organizeDecks() {
-            Object.keys(state.decks).forEach(key => {
-                state.decks[key].words = state.words.filter(w => w.deck === key);
-            });
-        }
-
-        // Update UI
-        function updateUI() {
-            organizeDecks();
-            
-            // Update stats
-            document.getElementById('total-words').textContent = state.words.length;
-            document.getElementById('learned-words').textContent = state.words.filter(w => w.learned).length;
-            document.getElementById('today-words').textContent = state.todayLearned;
-            document.getElementById('streak-count').textContent = state.streak;
-
-            // Render decks
-            renderDecks();
-
-            // Show current card
-            if (state.words.length > 0) {
-                showCard(state.currentWordIndex);
-            }
-        }
-
-        // Render decks
-        function renderDecks() {
-            const container = document.getElementById('decks-container');
-            container.innerHTML = '';
-
-            const deckClasses = {
-                basic: 'basic',
-                intermediate: 'intermediate',
-                advanced: 'advanced',
-                idioms: 'idioms'
-            };
-
-            Object.entries(state.decks).forEach(([key, deck]) => {
-                const total = deck.words.length;
-                const learned = deck.words.filter(w => w.learned).length;
-                const percent = total > 0 ? Math.round((learned / total) * 100) : 0;
-
-                const card = document.createElement('div');
-                card.className = 'deck-card';
-                card.innerHTML = `
-                    <div class="deck-icon ${deckClasses[key]}">${deck.icon}</div>
-                    <div class="deck-info">
-                        <div class="deck-name">${deck.name}</div>
-                        <div class="deck-meta">${total} слов</div>
-                    </div>
-                    <div class="deck-progress">
-                        <div class="deck-percent">${percent}%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percent}%"></div>
-                        </div>
-                    </div>
-                `;
-                card.addEventListener('click', () => selectDeck(key));
-                container.appendChild(card);
-            });
-        }
-
-        // Select deck
-        function selectDeck(deckKey) {
-            const deckWords = state.decks[deckKey].words;
-            if (deckWords.length > 0) {
-                const firstIndex = state.words.findIndex(w => w.deck === deckKey);
-                if (firstIndex !== -1) {
-                    state.currentWordIndex = firstIndex;
-                    showCard(state.currentWordIndex);
-                    showToast(`Выбрана колода: ${state.decks[deckKey].name}`, 'success');
-                }
-            } else {
-                showToast('В этой колоде пока нет слов', 'error');
-            }
-        }
-
-        // Show card
-        function showCard(index) {
-            if (state.words.length === 0) return;
-            
-            const word = state.words[index];
-            document.getElementById('card-word').textContent = word.word;
-            document.getElementById('card-phonetic').textContent = word.phonetic;
-            document.getElementById('card-translation').textContent = word.translation;
-            document.getElementById('card-example').innerHTML = word.example;
-            document.getElementById('card-category').textContent = state.decks[word.deck]?.name || 'Без категории';
-
-            // Reset flip state
-            document.getElementById('flashcard').classList.remove('flipped');
-        }
-
-        // Flip card
-        document.getElementById('flashcard').addEventListener('click', function() {
-            this.classList.toggle('flipped');
-            haptic('light');
-        });
-
-        // Handle correct answer
-        document.getElementById('btn-correct').addEventListener('click', () => {
-            if (state.words.length === 0) return;
-            
-            haptic('success');
-            state.words[state.currentWordIndex].learned = true;
-            state.todayLearned++;
-            nextCard();
-            showToast('Отлично! +1 слово изучено', 'success');
-            saveState();
-            updateUI();
-        });
-
-        // Handle wrong answer
-        document.getElementById('btn-wrong').addEventListener('click', () => {
-            if (state.words.length === 0) return;
-            
-            haptic('error');
-            nextCard();
-            showToast('Попробуем ещё раз позже', 'error');
-        });
-
-        // Skip card
-        document.getElementById('btn-skip').addEventListener('click', () => {
-            nextCard();
-        });
-
-        // Next card
-        function nextCard() {
-            state.currentWordIndex = (state.currentWordIndex + 1) % state.words.length;
-            showCard(state.currentWordIndex);
-        }
-
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const view = item.dataset.view;
-                
-                haptic('light');
-                
-                // Update nav
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-
-                // Update views
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById(`${view}-view`).classList.add('active');
-            });
-        });
-
-        // Add word
-        document.getElementById('add-word-btn').addEventListener('click', () => {
-            const word = document.getElementById('input-word').value.trim();
-            const phonetic = document.getElementById('input-phonetic').value.trim();
-            const translation = document.getElementById('input-translation').value.trim();
-            const example = document.getElementById('input-example').value.trim();
-            const deck = document.getElementById('input-deck').value;
-
-            if (!word || !translation) {
-                haptic('error');
-                showToast('Заполните слово и перевод', 'error');
-                return;
-            }
-
-            const newWord = {
-                word,
-                phonetic: phonetic || '',
-                translation,
-                example: example ? example.replace(new RegExp(word, 'gi'), `<em>${word}</em>`) : '',
-                deck,
-                learned: false
-            };
-
-            state.words.push(newWord);
-            saveState();
-            updateUI();
-
-            // Clear form
-            document.getElementById('input-word').value = '';
-            document.getElementById('input-phonetic').value = '';
-            document.getElementById('input-translation').value = '';
-            document.getElementById('input-example').value = '';
-
-            haptic('success');
-            showToast('Слово добавлено!', 'success');
-
-            // Switch to home
-            document.querySelector('.nav-item[data-view="home"]').click();
-        });
-
-        // Settings toggles
-        document.querySelectorAll('.toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                toggle.classList.toggle('active');
-            });
-        });
-
-        // Card count selector
-        document.querySelectorAll('.count-btn[data-count]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.count-btn[data-count]').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.settings.cardsPerDay = parseInt(btn.dataset.count);
-                saveState();
-            });
-        });
-
-        // Export
-        document.getElementById('export-btn')?.addEventListener('click', () => {
-            const data = JSON.stringify(state, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'lexicon_export.json';
-            a.click();
-            showToast('Данные экспортированы', 'success');
-        });
-
-        // Reset
-        document.getElementById('reset-btn')?.addEventListener('click', () => {
-            if (confirm('Вы уверены? Весь прогресс будет потерян.')) {
-                localStorage.removeItem('lexicon_state');
-                state.words = [...sampleWords];
-                state.currentWordIndex = 0;
-                state.streak = 0;
-                state.todayLearned = 0;
-                updateUI();
-                showToast('Прогресс сброшен', 'success');
-            }
-        });
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
-        // Initialize
-        loadState();
+    });
+    
+    $('add-btn').onclick=()=>{
+        const word=$('i-word').value.trim(), trans=$('i-trans').value.trim();
+        if(!word||!trans){ haptic('err'); toast('Заполни слово и перевод','err'); return; }
+        S.words.push({word, phon:$('i-phon').value.trim(), trans, ex:$('i-ex').value.trim().replace(new RegExp(word,'gi'),`<em>${word}</em>`), deck:$('i-deck').value, learned:false, rev:0});
+        save(); update();
+        ['i-word','i-phon','i-trans','i-ex'].forEach(id=>$(id).value='');
+        haptic('ok'); toast('Добавлено! ✓','ok');
+    };
+    
+    document.querySelectorAll('.toggle').forEach(t=>t.onclick=()=>{ haptic(); t.classList.toggle('on'); });
+    document.querySelectorAll('.cnt-btn[data-n]').forEach(b=>b.onclick=()=>{ haptic(); document.querySelectorAll('.cnt-btn[data-n]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
+    
+    $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='lexicon.json'; a.click(); toast('Экспорт','ok'); });
+    $('reset')?.addEventListener('click',()=>{ if(confirm('Сбросить?')){ localStorage.removeItem('lex4'); location.reload(); }});
+    
+    // Profile handlers
+    document.querySelectorAll('[id^="open-profile"]').forEach(btn=>btn.onclick=openProfile);
+    $('close-profile').onclick=closeProfile;
+    $('profile-overlay').onclick=e=>{ if(e.target===$('profile-overlay')) closeProfile(); };
+    
+    function toast(m,t='ok'){ const el=$('toast'); el.textContent=m; el.className=`toast ${t} show`; setTimeout(()=>el.classList.remove('show'),2500); }
+    
+    load();
     </script>
 </body>
 </html>
