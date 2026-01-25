@@ -145,6 +145,33 @@
         }
         .home-counter b { color: var(--gold); font-weight: 700; }
 
+        /* Mode switcher */
+        .mode-switch {
+            display: flex;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-btn.on {
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            color: white;
+        }
+
         /* ===== PROGRESS VIEW ===== */
         .progress-card {
             background: var(--glass);
@@ -352,6 +379,11 @@
             
             <div class="home-counter">Осталось: <b id="remaining">0</b> слов</div>
             
+            <div class="mode-switch">
+                <button class="mode-btn on" id="mode-learn">📚 Учить</button>
+                <button class="mode-btn" id="mode-repeat">🔄 Повторение</button>
+            </div>
+            
             <div class="card-wrap">
                 <div class="card" id="card">
                     <div class="card-face card-front">
@@ -504,6 +536,7 @@
         today: 0,
         startDate: null,
         dailyStats: {},
+        mode: 'learn', // 'learn' или 'repeat'
         decks: {
             basic: {name:'Базовые', icon:'📗', cls:'basic'},
             intermediate: {name:'Средние', icon:'📘', cls:'inter'},
@@ -571,7 +604,19 @@
         update();
     }
     const byDeck=k=>S.words.filter(w=>w.deck===k);
-    const study=()=>S.deck?S.words.filter(w=>w.deck===S.deck&&!w.learned):S.words.filter(w=>!w.learned);
+    const study=()=>{
+        let words;
+        if(S.deck){
+            words = S.words.filter(w=>w.deck===S.deck);
+        } else {
+            words = S.words;
+        }
+        // В режиме 'learn' — только невыученные, в 'repeat' — все
+        if(S.mode === 'learn'){
+            words = words.filter(w=>!w.learned);
+        }
+        return words;
+    };
     const todayKey=()=>new Date().toISOString().split('T')[0];
     
     function update(){
@@ -669,7 +714,19 @@
     
     function showCard(){
         const ws=study();
-        if(!ws.length){ $('c-word').textContent='Всё выучено! 🎉'; $('c-phon').textContent=''; $('c-cat').textContent='—'; $('c-trans').textContent='Добавь новые'; $('c-ex').textContent=''; return; }
+        if(!ws.length){ 
+            if(S.mode === 'learn'){
+                $('c-word').textContent='Всё выучено! 🎉'; 
+                $('c-trans').textContent='Переключись на повторение';
+            } else {
+                $('c-word').textContent='Нет слов'; 
+                $('c-trans').textContent='Добавь новые';
+            }
+            $('c-phon').textContent=''; 
+            $('c-cat').textContent='—'; 
+            $('c-ex').textContent=''; 
+            return; 
+        }
         if(S.idx>=ws.length) S.idx=0;
         const w=ws[S.idx];
         $('c-word').textContent=w.word;
@@ -710,6 +767,24 @@
     $('b-skip').onclick=()=>{ haptic(); next(); };
     $('back').onclick=closeDeck;
     $('study').onclick=()=>{ haptic('ok'); document.querySelector('[data-v="home"]').click(); toast(`Учим: ${S.decks[S.deck].name}`,'ok'); };
+    
+    // Переключение режимов
+    $('mode-learn').onclick=()=>{
+        haptic();
+        S.mode = 'learn';
+        S.idx = 0;
+        $('mode-learn').classList.add('on');
+        $('mode-repeat').classList.remove('on');
+        update();
+    };
+    $('mode-repeat').onclick=()=>{
+        haptic();
+        S.mode = 'repeat';
+        S.idx = 0;
+        $('mode-repeat').classList.add('on');
+        $('mode-learn').classList.remove('on');
+        update();
+    };
     
     document.querySelectorAll('.nav-item').forEach(n=>{
         n.onclick=()=>{
