@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a0f">
-    <title>Lexicon</title>
+    <title>Wordly</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -510,6 +510,10 @@
                 <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
                 <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
             </div>
+            <div class="section">
+                <div class="section-head">Приложение</div>
+                <div class="row"><span>На главный экран</span><button class="cnt-btn" id="add-home">📲 Добавить</button></div>
+            </div>
         </div>
     </div>
     
@@ -560,10 +564,10 @@
     function save(){
         const data = JSON.stringify(S);
         // Сохраняем локально как бэкап
-        localStorage.setItem('lex6',data);
+        localStorage.setItem('wordly',data);
         // Сохраняем в облако Telegram
         if(cloud){
-            cloud.setItem('lexicon_data', data, (err)=>{
+            cloud.setItem('wordly_data', data, (err)=>{
                 if(err) console.log('Cloud save error:', err);
             });
         }
@@ -572,7 +576,7 @@
     // Загрузка из облака Telegram
     function load(){
         if(cloud){
-            cloud.getItem('lexicon_data', (err, value)=>{
+            cloud.getItem('wordly_data', (err, value)=>{
                 if(!err && value){
                     try {
                         Object.assign(S, JSON.parse(value));
@@ -592,7 +596,7 @@
     
     // Локальная загрузка как фоллбэк
     function loadLocal(){
-        const d = localStorage.getItem('lex6');
+        const d = localStorage.getItem('wordly');
         if(d){
             try {
                 Object.assign(S, JSON.parse(d));
@@ -618,6 +622,25 @@
         return words;
     };
     const todayKey=()=>new Date().toISOString().split('T')[0];
+    
+    // Перемешивание массива (Fisher-Yates)
+    function shuffle(arr){
+        const a = [...arr];
+        for(let i = a.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+    
+    // Текущая перемешанная колода
+    let shuffledCards = [];
+    let shuffleIdx = 0;
+    
+    function reshuffleCards(){
+        shuffledCards = shuffle(study());
+        shuffleIdx = 0;
+    }
     
     function update(){
         const t=S.words.length, l=S.words.filter(w=>w.learned).length;
@@ -713,7 +736,7 @@
     function closeDeck(){ haptic(); $('decks-list').style.display='block'; $('deck-detail').style.display='none'; S.deck=null; }
     
     function showCard(){
-        const ws=study();
+        const ws = study();
         if(!ws.length){ 
             if(S.mode === 'learn'){
                 $('c-word').textContent='Всё выучено! 🎉'; 
@@ -724,11 +747,25 @@
             }
             $('c-phon').textContent=''; 
             $('c-cat').textContent='—'; 
-            $('c-ex').textContent=''; 
+            $('c-ex').textContent='';
+            shuffledCards = [];
             return; 
         }
-        if(S.idx>=ws.length) S.idx=0;
-        const w=ws[S.idx];
+        
+        // Перемешиваем если нужно
+        if(shuffledCards.length === 0 || shuffleIdx >= shuffledCards.length){
+            reshuffleCards();
+        }
+        
+        // Проверяем что текущая карта ещё валидна
+        const currentCard = shuffledCards[shuffleIdx];
+        if(!currentCard || (S.mode === 'learn' && currentCard.learned)){
+            reshuffleCards();
+        }
+        
+        if(shuffledCards.length === 0) return;
+        
+        const w = shuffledCards[shuffleIdx];
         $('c-word').textContent=w.word;
         $('c-phon').textContent=w.phon||'';
         $('c-cat').textContent=S.decks[w.deck]?.name||'—';
@@ -737,8 +774,17 @@
         $('card').classList.remove('flipped');
     }
     
-    function next(){ const ws=study(); S.idx=(S.idx+1)%Math.max(ws.length,1); showCard(); }
-    function cur(){ const ws=study(); return ws.length?ws[S.idx]:null; }
+    function next(){ 
+        shuffleIdx++;
+        if(shuffleIdx >= shuffledCards.length){
+            reshuffleCards();
+        }
+        showCard(); 
+    }
+    
+    function cur(){ 
+        return shuffledCards.length ? shuffledCards[shuffleIdx] : null; 
+    }
     
     $('card').onclick=function(){ this.classList.toggle('flipped'); haptic(); };
     
@@ -772,7 +818,7 @@
     $('mode-learn').onclick=()=>{
         haptic();
         S.mode = 'learn';
-        S.idx = 0;
+        reshuffleCards();
         $('mode-learn').classList.add('on');
         $('mode-repeat').classList.remove('on');
         update();
@@ -780,7 +826,7 @@
     $('mode-repeat').onclick=()=>{
         haptic();
         S.mode = 'repeat';
-        S.idx = 0;
+        reshuffleCards();
         $('mode-repeat').classList.add('on');
         $('mode-learn').classList.remove('on');
         update();
@@ -809,11 +855,11 @@
     document.querySelectorAll('.toggle').forEach(t=>t.onclick=()=>{ haptic(); t.classList.toggle('on'); });
     document.querySelectorAll('.cnt-btn[data-n]').forEach(b=>b.onclick=()=>{ haptic(); document.querySelectorAll('.cnt-btn[data-n]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
     
-    $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='lexicon.json'; a.click(); toast('Экспорт','ok'); });
+    $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='wordly.json'; a.click(); toast('Экспорт','ok'); });
     $('reset')?.addEventListener('click',()=>{ 
         if(confirm('Сбросить все данные?')){ 
-            localStorage.removeItem('lex6'); 
-            if(cloud) cloud.removeItem('lexicon_data', ()=>{});
+            localStorage.removeItem('wordly'); 
+            if(cloud) cloud.removeItem('wordly_data', ()=>{});
             location.reload(); 
         }
     });
@@ -823,7 +869,7 @@
             // Сначала сохраняем текущие данные
             save();
             // Потом загружаем из облака
-            cloud.getItem('lexicon_data', (err, value)=>{
+            cloud.getItem('wordly_data', (err, value)=>{
                 if(!err && value){
                     try {
                         Object.assign(S, JSON.parse(value));
@@ -840,6 +886,32 @@
             toast('Откройте в Telegram','err');
         }
     });
+    
+    // Добавить на главный экран
+    $('add-home')?.addEventListener('click',()=>{
+        haptic();
+        if(tg?.addToHomeScreen){
+            tg.addToHomeScreen();
+        } else {
+            toast('Обновите Telegram','err');
+        }
+    });
+    
+    // Проверяем статус при загрузке
+    if(tg?.checkHomeScreenStatus){
+        tg.checkHomeScreenStatus(function(status){
+            const btn = $('add-home');
+            if(btn){
+                if(status === 'added'){
+                    btn.textContent = '✅ Добавлено';
+                    btn.disabled = true;
+                } else if(status === 'unsupported'){
+                    btn.textContent = '❌ Недоступно';
+                    btn.disabled = true;
+                }
+            }
+        });
+    }
     
     function toast(m,t='ok'){ const el=$('toast'); el.textContent=m; el.className=`toast ${t} show`; setTimeout(()=>el.classList.remove('show'),2500); }
     
