@@ -524,7 +524,8 @@
             </div>
             <div class="section">
                 <div class="section-head">Данные</div>
-                <div class="row"><span>Синхронизация</span><button class="cnt-btn" id="sync">☁️ Синхр.</button></div>
+                <div class="row"><span>Выгрузить в облако</span><button class="cnt-btn" id="sync-up">☁️ ↑</button></div>
+                <div class="row"><span>Загрузить из облака</span><button class="cnt-btn" id="sync-down">☁️ ↓</button></div>
                 <div class="row"><span>Импорт</span><button class="cnt-btn" id="import">📥</button><input type="file" id="import-file" accept=".json" style="display:none"></div>
                 <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
                 <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
@@ -1007,23 +1008,52 @@
             location.reload(); 
         }
     });
-    $('sync')?.addEventListener('click',()=>{
+    // Выгрузить в облако
+    $('sync-up')?.addEventListener('click',()=>{
         haptic();
         if(cloud){
-            // Сначала сохраняем текущие данные
             save();
-            // Потом загружаем из облака
+            toast('Выгружено в облако ☁️↑','ok');
+        } else if(device){
+            save();
+            toast('Сохранено на устройство 📱','ok');
+        } else {
+            toast('Откройте в Telegram','err');
+        }
+    });
+    
+    // Загрузить из облака
+    $('sync-down')?.addEventListener('click',()=>{
+        haptic();
+        if(cloud){
             cloud.getItem('wordly_data', (err, value)=>{
                 if(!err && value){
                     try {
                         Object.assign(S, JSON.parse(value));
+                        save(); // сохраняем локально тоже
+                        reshuffleCards();
                         update();
-                        toast('Синхронизировано ☁️','ok');
+                        toast('Загружено из облака ☁️↓','ok');
                     } catch(e){
-                        toast('Ошибка синхронизации','err');
+                        toast('Ошибка загрузки','err');
                     }
                 } else {
-                    toast('Данные сохранены ☁️','ok');
+                    toast('В облаке пусто','err');
+                }
+            });
+        } else if(device){
+            device.getItem('wordly_data', (err, value)=>{
+                if(!err && value){
+                    try {
+                        Object.assign(S, JSON.parse(value));
+                        reshuffleCards();
+                        update();
+                        toast('Загружено с устройства 📱','ok');
+                    } catch(e){
+                        toast('Ошибка загрузки','err');
+                    }
+                } else {
+                    toast('Нет сохранённых данных','err');
                 }
             });
         } else {
