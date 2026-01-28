@@ -576,6 +576,11 @@
     if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); tg.disableVerticalSwipes?.(); }
     const haptic = t => { if(!tg?.HapticFeedback)return; t==='ok'?tg.HapticFeedback.notificationOccurred('success'):t==='err'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred('light'); };
     
+    // Проверка CloudStorage
+    const cloud = tg?.CloudStorage;
+    console.log('Telegram WebApp:', tg ? 'OK' : 'NOT FOUND');
+    console.log('CloudStorage:', cloud ? 'OK' : 'NOT FOUND');
+    
     const S = {
         words: [],
         idx: 0,
@@ -602,17 +607,25 @@
     ];
     
     const $=id=>document.getElementById(id);
-    const cloud = tg?.CloudStorage;
     
     // Сохранение в облако Telegram
     function save(){
         const data = JSON.stringify(S);
         // Сохраняем локально как бэкап
-        localStorage.setItem('wordly',data);
+        try {
+            localStorage.setItem('wordly', data);
+            console.log('LocalStorage: saved');
+        } catch(e){
+            console.log('LocalStorage error:', e);
+        }
         // Сохраняем в облако Telegram
         if(cloud){
             cloud.setItem('wordly_data', data, (err)=>{
-                if(err) console.log('Cloud save error:', err);
+                if(err){
+                    console.log('Cloud save error:', err);
+                } else {
+                    console.log('CloudStorage: saved');
+                }
             });
         }
     }
