@@ -985,12 +985,26 @@
                     if(data.decks){
                         Object.assign(S.decks, data.decks);
                     }
-                    save();
-                    // Повторно сохраняем через секунду для надёжности
-                    setTimeout(()=>{ save(); }, 1000);
+                    
+                    // Сохраняем локально
+                    const dataStr = JSON.stringify(S);
+                    try { localStorage.setItem('wordly', dataStr); } catch(e){}
+                    
+                    // Сохраняем в облако напрямую
+                    if(cloud){
+                        cloud.setItem('wordly_data', dataStr, (err)=>{
+                            if(!err){
+                                toast(`Добавлено ${added} слов ☁️`,'ok');
+                            } else {
+                                toast(`Добавлено ${added} слов (локально)`,'ok');
+                            }
+                        });
+                    } else {
+                        toast(`Добавлено ${added} слов`,'ok');
+                    }
+                    
                     reshuffleCards();
                     update();
-                    toast(`Добавлено ${added} слов`,'ok');
                 } else {
                     toast('Неверный формат','err');
                 }
