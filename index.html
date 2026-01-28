@@ -357,6 +357,24 @@
         .empty-text { font-size:16px; font-weight:600; margin-bottom:6px; }
         .empty-sub { font-size:13px; color:var(--muted); }
         
+        /* Модальное окно редактирования */
+        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+        .modal-overlay.show { display:flex; }
+        .modal { background:var(--bg2); border-radius:20px; padding:24px; width:100%; max-width:360px; border:1px solid var(--border); }
+        .modal-title { font-size:18px; font-weight:700; margin-bottom:20px; text-align:center; }
+        .modal .form-group { margin-bottom:14px; }
+        .modal .form-lbl { font-size:12px; color:var(--muted); margin-bottom:6px; display:block; }
+        .modal .form-input { width:100%; background:var(--glass); border:1px solid var(--border); border-radius:10px; padding:12px; color:var(--text); font-size:14px; }
+        .modal-btns { display:flex; gap:10px; margin-top:20px; }
+        .modal-btn { flex:1; padding:12px; border-radius:12px; border:none; font-size:14px; font-weight:600; cursor:pointer; }
+        .modal-btn.save { background:var(--green); color:#000; }
+        .modal-btn.cancel { background:var(--glass); color:var(--text); border:1px solid var(--border); }
+        .modal-btn.delete { background:var(--red); color:#fff; }
+        .modal-btn:active { transform:scale(0.97); }
+        
+        .word-item { cursor:pointer; transition: background 0.2s; }
+        .word-item:active { background:var(--glass); }
+        
         @media (max-width:380px) {
             .card-word { font-size:28px; }
             .card-trans { font-size:24px; }
@@ -527,6 +545,31 @@
     </nav>
     
     <div class="toast" id="toast"></div>
+    
+    <!-- Модальное окно редактирования слова -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <div class="modal-title">Редактировать</div>
+            <div class="form-group"><label class="form-lbl">Слово</label><input class="form-input" id="e-word"></div>
+            <div class="form-group"><label class="form-lbl">Транскрипция</label><input class="form-input" id="e-phon"></div>
+            <div class="form-group"><label class="form-lbl">Перевод</label><input class="form-input" id="e-trans"></div>
+            <div class="form-group"><label class="form-lbl">Пример</label><input class="form-input" id="e-ex"></div>
+            <div class="form-group">
+                <label class="form-lbl">Колода</label>
+                <select class="form-input" id="e-deck">
+                    <option value="basic">📗 Базовые</option>
+                    <option value="intermediate">📘 Средние</option>
+                    <option value="advanced">📕 Продвинутые</option>
+                    <option value="idioms">📙 Идиомы</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" id="edit-cancel">Отмена</button>
+                <button class="modal-btn delete" id="edit-delete">🗑</button>
+                <button class="modal-btn save" id="edit-save">Сохранить</button>
+            </div>
+        </div>
+    </div>
     
     <script>
     const tg = window.Telegram?.WebApp;
@@ -717,6 +760,8 @@
         });
     }
     
+    let editingWordIdx = null;
+    
     function openDeck(k){
         haptic(); S.deck=k;
         $('decks-list').style.display='none';
@@ -725,14 +770,64 @@
         const c=$('words'); c.innerHTML='';
         const ws=byDeck(k);
         if(!ws.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Пусто</div><div class="empty-sub">Добавь слова</div></div>'; return; }
-        ws.forEach(w=>{
+        ws.forEach((w,i)=>{
             const st=w.learned?'learned':w.rev>0?'learning':'';
             const el=document.createElement('div');
             el.className='word-item';
             el.innerHTML=`<div><div class="word-w">${w.word}</div><div class="word-t">${w.trans}</div></div><div class="word-status ${st}"></div>`;
+            el.onclick=()=>openEditModal(w);
             c.appendChild(el);
         });
     }
+    
+    function openEditModal(w){
+        haptic();
+        editingWordIdx = S.words.indexOf(w);
+        $('e-word').value = w.word || '';
+        $('e-phon').value = w.phon || '';
+        $('e-trans').value = w.trans || '';
+        $('e-ex').value = w.ex || '';
+        $('e-deck').value = w.deck || 'basic';
+        $('edit-modal').classList.add('show');
+    }
+    
+    function closeEditModal(){
+        $('edit-modal').classList.remove('show');
+        editingWordIdx = null;
+    }
+    
+    $('edit-cancel')?.addEventListener('click', closeEditModal);
+    
+    $('edit-modal')?.addEventListener('click', (e)=>{
+        if(e.target.id === 'edit-modal') closeEditModal();
+    });
+    
+    $('edit-save')?.addEventListener('click', ()=>{
+        if(editingWordIdx === null) return;
+        const w = S.words[editingWordIdx];
+        w.word = $('e-word').value.trim();
+        w.phon = $('e-phon').value.trim();
+        w.trans = $('e-trans').value.trim();
+        w.ex = $('e-ex').value.trim();
+        w.deck = $('e-deck').value;
+        save();
+        closeEditModal();
+        if(S.deck) openDeck(S.deck);
+        toast('Сохранено','ok');
+    });
+    
+    $('edit-delete')?.addEventListener('click', ()=>{
+        if(editingWordIdx === null) return;
+        if(confirm('Удалить это слово?')){
+            S.words.splice(editingWordIdx, 1);
+            save();
+            closeEditModal();
+            if(S.deck) openDeck(S.deck);
+            reshuffleCards();
+            update();
+            toast('Удалено','ok');
+        }
+    });
     
     function closeDeck(){ haptic(); $('decks-list').style.display='block'; $('deck-detail').style.display='none'; S.deck=null; }
     
