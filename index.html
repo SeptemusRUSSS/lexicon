@@ -507,6 +507,7 @@
             <div class="section">
                 <div class="section-head">Данные</div>
                 <div class="row"><span>Синхронизация</span><button class="cnt-btn" id="sync">☁️ Синхр.</button></div>
+                <div class="row"><span>Импорт</span><button class="cnt-btn" id="import">📥</button><input type="file" id="import-file" accept=".json" style="display:none"></div>
                 <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
                 <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
             </div>
@@ -856,6 +857,44 @@
     document.querySelectorAll('.cnt-btn[data-n]').forEach(b=>b.onclick=()=>{ haptic(); document.querySelectorAll('.cnt-btn[data-n]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
     
     $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='wordly.json'; a.click(); toast('Экспорт','ok'); });
+    
+    // Импорт JSON
+    $('import')?.addEventListener('click',()=>{ $('import-file').click(); });
+    $('import-file')?.addEventListener('change',(e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev)=>{
+            try {
+                const data = JSON.parse(ev.target.result);
+                if(data.words && Array.isArray(data.words)){
+                    // Мержим слова
+                    const existingWords = new Set(S.words.map(w=>w.word.toLowerCase()));
+                    let added = 0;
+                    data.words.forEach(w=>{
+                        if(!existingWords.has(w.word.toLowerCase())){
+                            S.words.push(w);
+                            added++;
+                        }
+                    });
+                    // Мержим колоды
+                    if(data.decks){
+                        Object.assign(S.decks, data.decks);
+                    }
+                    save();
+                    reshuffleCards();
+                    update();
+                    toast(`Добавлено ${added} слов`,'ok');
+                } else {
+                    toast('Неверный формат','err');
+                }
+            } catch(err){
+                toast('Ошибка чтения','err');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
     $('reset')?.addEventListener('click',()=>{ 
         if(confirm('Сбросить все данные?')){ 
             localStorage.removeItem('wordly'); 
