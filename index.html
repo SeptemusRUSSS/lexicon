@@ -28,324 +28,120 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100dvh;
-            letter-spacing: -0.01em;
         }
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 0;
-        }
+        .orb { position:fixed; border-radius:50%; filter:blur(80px); opacity:0.4; pointer-events:none; z-index:0; }
         .orb1 { width:300px; height:300px; background:var(--purple); top:-100px; right:-100px; }
         .orb2 { width:250px; height:250px; background:var(--gold); bottom:20%; left:-80px; }
         
-        .app {
-            position: relative;
-            z-index: 1;
-            padding: 16px;
-            padding-top: calc(12px + env(safe-area-inset-top));
-            padding-bottom: 70px;
-            min-height: 100dvh;
-        }
+        .app { position:relative; z-index:1; padding:16px; padding-top:calc(12px + env(safe-area-inset-top)); padding-bottom:70px; min-height:100dvh; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .page-title { font-size:24px; font-weight:800; }
         
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .page-title {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-        }
-        .profile-btn {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--gold), var(--purple));
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .profile-btn:active { transform: scale(0.95); }
-        
-        /* Flashcard - главный экран */
+        /* Card */
         .card-wrap { perspective:1000px; margin-bottom:20px; }
-        .card {
-            width: 100%;
-            height: 340px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            cursor: pointer;
-        }
-        .card.flipped { transform: rotateY(180deg); }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            text-align: center;
-        }
-        .card-front {
-            background: var(--card);
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .card-back {
-            background: linear-gradient(145deg, #1e1e3a, #1a1a35);
-            border: 1px solid var(--purple);
-            transform: rotateY(180deg);
-        }
-        .card-cat { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold); margin-bottom:20px; font-weight:600; }
-        .card-word { font-size:36px; font-weight:700; margin-bottom:12px; }
-        .card-phon { font-size:16px; color:var(--muted); font-style:italic; }
-        .card-trans { font-size:32px; font-weight:600; margin-bottom:16px; }
-        .card-ex { font-size:15px; color:#a0a0b0; max-width:280px; }
-        .card-ex em { color:#9d8ff5; font-style:normal; font-weight:500; }
-        .tap-hint { position:absolute; bottom:20px; font-size:12px; color:var(--muted); }
+        .card { width:100%; height:320px; position:relative; transform-style:preserve-3d; transition:transform 0.6s; cursor:pointer; }
+        .card.flipped { transform:rotateY(180deg); }
+        .card-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; }
+        .card-front { background:var(--card); border:1px solid var(--border); }
+        .card-back { background:linear-gradient(145deg, #1e1e3a, #1a1a30); border:1px solid var(--border); transform:rotateY(180deg); }
+        .card-cat { font-size:12px; color:var(--gold); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
+        .card-word { font-size:32px; font-weight:800; margin-bottom:8px; }
+        .card-phon { font-size:14px; color:var(--muted); margin-bottom:12px; }
+        .card-trans { font-size:28px; font-weight:700; color:var(--gold); }
+        .card-ex { font-size:14px; color:var(--muted); margin-top:16px; line-height:1.5; }
+        .card-ex em { color:var(--green); font-style:normal; font-weight:600; }
+        .tap-hint { font-size:12px; color:var(--muted); margin-top:auto; }
         
-        /* Buttons */
+        .home-counter { text-align:center; font-size:13px; color:var(--muted); margin-bottom:12px; }
+        .mode-switch { display:flex; gap:8px; margin-bottom:16px; }
+        .mode-btn { flex:1; padding:10px; border:1px solid var(--border); background:var(--glass); border-radius:12px; color:var(--muted); font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .mode-btn.on { background:var(--purple); color:#fff; border-color:var(--purple); }
+        
         .btns { display:flex; justify-content:center; gap:16px; }
-        .btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            transition: transform 0.2s;
-        }
+        .btn { width:64px; height:64px; border-radius:50%; border:none; font-size:24px; cursor:pointer; transition:all 0.2s; }
         .btn:active { transform:scale(0.9); }
-        .btn-no { background:linear-gradient(135deg, #2a1a1a, #1a0a0a); border:2px solid var(--red); color:var(--red); }
-        .btn-yes { background:linear-gradient(135deg, #1a2a1a, #0a1a0a); border:2px solid var(--green); color:var(--green); }
-        .btn-skip { width:48px; height:48px; background:var(--glass); border:1px solid var(--border); color:var(--muted); font-size:18px; align-self:center; }
-
-        /* Counter on home */
-        .home-counter {
-            text-align: center;
-            margin-bottom: 16px;
-            font-size: 14px;
-            color: var(--muted);
-        }
-        .home-counter b { color: var(--gold); font-weight: 700; }
-
-        /* Mode switcher */
-        .mode-switch {
-            display: flex;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 16px;
-        }
-        .mode-btn {
-            flex: 1;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 10px;
-            background: transparent;
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .mode-btn.on {
-            background: linear-gradient(135deg, var(--gold), var(--purple));
-            color: white;
-        }
-
-        /* ===== PROGRESS VIEW ===== */
-        .progress-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .progress-title { font-size: 15px; color: var(--muted); }
-        .progress-val { font-size: 28px; font-weight: 800; }
-        .progress-val.gold { color: var(--gold); }
-        .progress-bar { height:10px; background:var(--bg2); border-radius:5px; overflow:hidden; }
-        .progress-fill { height:100%; background:linear-gradient(90deg, var(--gold), var(--purple)); border-radius:5px; transition:width 0.8s; }
+        .btn-no { background:linear-gradient(135deg, #ff6b6b, #ee5a5a); }
+        .btn-skip { background:var(--glass); border:1px solid var(--border); }
+        .btn-yes { background:linear-gradient(135deg, #4ade80, #22c55e); }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-        .stat-val { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
-        .stat-val.green { color: var(--green); }
-        .stat-val.purple { color: var(--purple); }
-        .stat-val.blue { color: #60a5fa; }
-        .stat-val.gold { color: var(--gold); }
-        .stat-lbl { font-size: 12px; color: var(--muted); }
-
-        .streak-card {
-            background: linear-gradient(135deg, rgba(212,165,116,0.15), rgba(124,106,239,0.15));
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .streak-icon { font-size: 36px; }
-        .streak-info h3 { font-size: 22px; font-weight: 800; color: var(--gold); }
-        .streak-info span { font-size: 13px; color: var(--muted); }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--muted);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .week-chart {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            height: 90px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px;
-        }
-        .week-day { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
-        .week-bar-wrap { width:100%; max-width:20px; height:45px; background:var(--bg2); border-radius:4px; display:flex; align-items:flex-end; overflow:hidden; }
-        .week-bar { width:100%; background:linear-gradient(180deg, var(--purple), var(--gold)); border-radius:4px; min-height:2px; }
-        .week-bar.today { background:linear-gradient(180deg, var(--green), #22c55e); }
-        .week-lbl { font-size:10px; color:var(--muted); }
-        .week-lbl.today { color:var(--green); font-weight:600; }
-
-        /* ===== DECKS ===== */
-        .decks { display:flex; flex-direction:column; gap:10px; }
-        .deck {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-        .deck:active { transform:scale(0.98); }
-        .deck-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; }
-        .deck-icon.basic { background:linear-gradient(135deg, #4ade80, #22c55e); }
-        .deck-icon.inter { background:linear-gradient(135deg, #60a5fa, #3b82f6); }
-        .deck-icon.adv { background:linear-gradient(135deg, #f472b6, #ec4899); }
-        .deck-icon.idiom { background:linear-gradient(135deg, #fbbf24, #f59e0b); }
-        .deck-info { flex:1; }
-        .deck-name { font-size:16px; font-weight:600; margin-bottom:2px; }
-        .deck-meta { font-size:12px; color:var(--muted); }
-        .deck-arr { font-size:18px; color:var(--muted); }
+        /* Views */
+        .view { display:none; }
+        .view.on { display:block; }
+        
+        /* Decks */
+        .decks { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .deck { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; cursor:pointer; transition:all 0.2s; }
+        .deck:active { transform:scale(0.97); }
+        .deck-icon { font-size:32px; margin-bottom:8px; }
+        .deck-name { font-size:14px; font-weight:600; margin-bottom:4px; }
+        .deck-cnt { font-size:12px; color:var(--muted); }
+        .deck-add { border:2px dashed var(--border); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--muted); }
+        .deck-add:hover { border-color:var(--purple); color:var(--purple); }
         
         .detail-head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-        .back-btn { width:36px; height:36px; border-radius:10px; background:var(--glass); border:1px solid var(--border); color:var(--text); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .detail-title { font-size:20px; font-weight:700; }
+        .back-btn { width:36px; height:36px; border-radius:50%; background:var(--glass); border:1px solid var(--border); color:var(--text); font-size:18px; cursor:pointer; }
+        .detail-title { font-size:20px; font-weight:700; flex:1; }
+        .detail-actions { display:flex; gap:8px; }
+        .detail-btn { padding:8px 12px; border-radius:8px; border:none; font-size:12px; cursor:pointer; }
+        .detail-btn.edit { background:var(--glass); border:1px solid var(--border); color:var(--text); }
+        .detail-btn.delete { background:var(--red); color:#fff; }
         
-        .words { display:flex; flex-direction:column; gap:8px; }
-        .word-item { background:var(--glass); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; justify-content:space-between; align-items:center; }
-        .word-w { font-size:16px; font-weight:600; margin-bottom:2px; }
+        .words { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+        .word-item { background:var(--glass); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+        .word-item:active { background:var(--border); }
+        .word-w { font-weight:600; margin-bottom:2px; }
         .word-t { font-size:13px; color:var(--muted); }
         .word-status { width:8px; height:8px; border-radius:50%; background:var(--muted); }
         .word-status.learned { background:var(--green); }
-        .word-status.learning { background:var(--purple); }
+        .word-status.learning { background:var(--gold); }
         
-        .study-btn { width:100%; padding:14px; background:linear-gradient(135deg, var(--gold), var(--purple)); border:none; border-radius:14px; color:white; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; margin-top:16px; }
-
-        /* ===== ADD FORM ===== */
+        .study-btn { width:100%; padding:14px; background:linear-gradient(135deg, var(--purple), #6366f1); border:none; border-radius:14px; color:#fff; font-size:15px; font-weight:700; cursor:pointer; }
+        
+        /* Progress */
+        .streak-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:20px; display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+        .streak-icon { font-size:40px; }
+        .streak-info h3 { font-size:20px; font-weight:700; }
+        .streak-info p { font-size:13px; color:var(--muted); }
+        .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+        .stat-card { background:var(--glass); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center; }
+        .stat-val { font-size:24px; font-weight:800; }
+        .stat-val.green { color:var(--green); }
+        .stat-val.purple { color:var(--purple); }
+        .stat-lbl { font-size:11px; color:var(--muted); margin-top:4px; }
+        .section-title { font-size:14px; font-weight:600; color:var(--muted); margin-bottom:12px; }
+        .week-chart { display:flex; gap:6px; align-items:flex-end; height:80px; }
+        .week-bar { flex:1; background:var(--glass); border-radius:6px; min-height:8px; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding-bottom:4px; }
+        .week-bar-fill { width:100%; background:linear-gradient(to top, var(--purple), var(--gold)); border-radius:6px; }
+        .week-bar span { font-size:9px; color:var(--muted); margin-top:4px; }
+        
+        /* Form */
         .form-group { margin-bottom:14px; }
-        .form-lbl { display:block; font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
-        .form-input { width:100%; padding:12px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:15px; font-family:inherit; }
+        .form-lbl { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:500; }
+        .form-input { width:100%; background:var(--glass); border:1px solid var(--border); border-radius:12px; padding:12px 14px; color:var(--text); font-size:14px; font-family:inherit; }
         .form-input:focus { outline:none; border-color:var(--purple); }
-        .form-input::placeholder { color:var(--muted); }
-        .submit-btn { width:100%; padding:14px; background:linear-gradient(135deg, var(--gold), var(--purple)); border:none; border-radius:12px; color:white; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; }
-
-        /* ===== SETTINGS ===== */
-        .section { background:var(--glass); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px; }
-        .section-head { font-size:14px; font-weight:600; margin-bottom:12px; color:#a0a0b0; }
+        .submit-btn { width:100%; padding:14px; background:linear-gradient(135deg, var(--gold), #c4956a); border:none; border-radius:14px; color:#000; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; }
+        
+        /* Settings */
+        .section { background:var(--glass); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:12px; }
+        .section-head { font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; }
         .row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
         .row:last-child { border-bottom:none; }
         .row span { font-size:14px; }
-        .toggle { width:46px; height:26px; background:var(--bg2); border-radius:13px; position:relative; cursor:pointer; }
-        .toggle.on { background:var(--purple); }
-        .toggle::after { content:''; position:absolute; width:20px; height:20px; background:white; border-radius:50%; top:3px; left:3px; transition:transform 0.3s; }
-        .toggle.on::after { transform:translateX(20px); }
-        .cnt-btn { padding:6px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; color:#a0a0b0; font-size:13px; font-family:inherit; cursor:pointer; }
-        .cnt-btn.on { background:var(--gold); border-color:var(--gold); color:var(--bg); font-weight:600; }
-        .cnt-btn.danger { border-color:var(--red); color:var(--red); }
+        .toggle { width:44px; height:26px; background:var(--muted); border-radius:13px; position:relative; cursor:pointer; transition:background 0.2s; }
+        .toggle.on { background:var(--green); }
+        .toggle::after { content:''; position:absolute; width:22px; height:22px; background:#fff; border-radius:50%; top:2px; left:2px; transition:left 0.2s; }
+        .toggle.on::after { left:20px; }
+        .cnt-btn { padding:8px 14px; background:var(--glass); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:13px; cursor:pointer; }
+        .cnt-btn.on { background:var(--purple); border-color:var(--purple); }
+        .cnt-btn.danger { background:var(--red); border-color:var(--red); color:#fff; }
         .cnt-sel { display:flex; gap:6px; }
-
-        /* ===== NAV - COMPACT ===== */
-        .nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10,10,15,0.98);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            padding: 6px 8px;
-            padding-bottom: calc(6px + env(safe-area-inset-bottom));
-            display: flex;
-            justify-content: space-around;
-            z-index: 100;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            padding: 6px 10px;
-            border-radius: 10px;
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-family: inherit;
-            cursor: pointer;
-        }
-        .nav-item.on { color: var(--gold); }
-        .nav-icon { font-size: 20px; }
-        .nav-lbl { font-size: 9px; font-weight: 500; }
         
-        .view { display:none; }
-        .view.on { display:block; }
+        /* Nav */
+        .nav { position:fixed; bottom:0; left:0; right:0; background:rgba(10,10,15,0.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; padding:8px 16px; padding-bottom:calc(8px + env(safe-area-inset-bottom)); z-index:100; }
+        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px; background:none; border:none; color:var(--muted); cursor:pointer; transition:color 0.2s; }
+        .nav-item.on { color:var(--gold); }
+        .nav-icon { font-size:20px; }
+        .nav-lbl { font-size:10px; font-weight:500; }
         
         .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--bg2); border:1px solid var(--border); padding:12px 20px; border-radius:12px; font-size:13px; font-weight:500; opacity:0; transition:all 0.4s; z-index:1000; }
         .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -357,30 +153,24 @@
         .empty-text { font-size:16px; font-weight:600; margin-bottom:6px; }
         .empty-sub { font-size:13px; color:var(--muted); }
         
-        /* Модальное окно редактирования */
+        /* Modal */
         .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
         .modal-overlay.show { display:flex; }
-        .modal { background:var(--bg2); border-radius:20px; padding:24px; width:100%; max-width:360px; border:1px solid var(--border); }
+        .modal { background:var(--bg2); border-radius:20px; padding:24px; width:100%; max-width:360px; border:1px solid var(--border); max-height:80vh; overflow-y:auto; }
         .modal-title { font-size:18px; font-weight:700; margin-bottom:20px; text-align:center; }
-        .modal .form-group { margin-bottom:14px; }
-        .modal .form-lbl { font-size:12px; color:var(--muted); margin-bottom:6px; display:block; }
-        .modal .form-input { width:100%; background:var(--glass); border:1px solid var(--border); border-radius:10px; padding:12px; color:var(--text); font-size:14px; }
         .modal-btns { display:flex; gap:10px; margin-top:20px; }
         .modal-btn { flex:1; padding:12px; border-radius:12px; border:none; font-size:14px; font-weight:600; cursor:pointer; }
         .modal-btn.save { background:var(--green); color:#000; }
         .modal-btn.cancel { background:var(--glass); color:var(--text); border:1px solid var(--border); }
         .modal-btn.delete { background:var(--red); color:#fff; }
-        .modal-btn:active { transform:scale(0.97); }
         
-        .word-item { cursor:pointer; transition: background 0.2s; }
-        .word-item:active { background:var(--glass); }
-        
-        @media (max-width:380px) {
-            .card-word { font-size:28px; }
-            .card-trans { font-size:24px; }
-            .card { height:300px; }
-            .btn { width:56px; height:56px; font-size:22px; }
-        }
+        /* Icon picker */
+        .icon-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
+        .icon-opt { width:100%; aspect-ratio:1; border-radius:12px; border:2px solid var(--border); background:var(--glass); font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .icon-opt.on { border-color:var(--purple); background:var(--purple); }
+        .color-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+        .color-opt { width:100%; aspect-ratio:1; border-radius:50%; border:3px solid transparent; cursor:pointer; }
+        .color-opt.on { border-color:#fff; }
     </style>
 </head>
 <body>
@@ -388,20 +178,16 @@
     <div class="orb orb2"></div>
     
     <div class="app">
-        <!-- HOME - только карточка -->
+        <!-- HOME -->
         <div id="v-home" class="view on">
             <div class="header">
                 <span class="page-title">Учить</span>
-                <button class="profile-btn" id="open-profile">👤</button>
             </div>
-            
             <div class="home-counter">Осталось: <b id="remaining">0</b> слов</div>
-            
             <div class="mode-switch">
                 <button class="mode-btn on" id="mode-learn">📚 Учить</button>
                 <button class="mode-btn" id="mode-repeat">🔄 Повторение</button>
             </div>
-            
             <div class="card-wrap">
                 <div class="card" id="card">
                     <div class="card-face card-front">
@@ -417,7 +203,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="btns">
                 <button class="btn btn-no" id="b-no">✕</button>
                 <button class="btn btn-skip" id="b-skip">↷</button>
@@ -425,63 +210,34 @@
             </div>
         </div>
         
-        <!-- PROGRESS - статистика -->
+        <!-- PROGRESS -->
         <div id="v-progress" class="view">
-            <div class="header">
-                <span class="page-title">Прогресс</span>
-                <button class="profile-btn" id="open-profile-2">👤</button>
-            </div>
-            
+            <div class="header"><span class="page-title">Прогресс</span></div>
             <div class="streak-card">
                 <div class="streak-icon">🔥</div>
-                <div class="streak-info">
-                    <h3 id="p-streak">0 дней</h3>
-                    <span>Текущая серия</span>
-                </div>
+                <div class="streak-info"><h3 id="p-streak">0 дней</h3><p>Серия обучения</p></div>
             </div>
-            
-            <div class="progress-card">
-                <div class="progress-header">
-                    <span class="progress-title">Общий прогресс</span>
-                    <span class="progress-val gold" id="p-pct">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="p-fill" style="width:0%"></div></div>
-            </div>
-            
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-val gold" id="p-total">0</div>
-                    <div class="stat-lbl">Всего слов</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-val green" id="p-learned">0</div>
-                    <div class="stat-lbl">Выучено</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-val purple" id="p-today">0</div>
-                    <div class="stat-lbl">Сегодня</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-val blue" id="p-avg">0</div>
-                    <div class="stat-lbl">В среднем/день</div>
-                </div>
+                <div class="stat-card"><div class="stat-val" id="p-total">0</div><div class="stat-lbl">Всего слов</div></div>
+                <div class="stat-card"><div class="stat-val green" id="p-learned">0</div><div class="stat-lbl">Выучено</div></div>
+                <div class="stat-card"><div class="stat-val purple" id="p-today">0</div><div class="stat-lbl">Сегодня</div></div>
             </div>
-            
             <div class="section-title">Активность за неделю</div>
             <div class="week-chart" id="week-chart"></div>
         </div>
         
         <!-- DECKS -->
         <div id="v-decks" class="view">
-            <div class="header">
-                <span class="page-title">Колоды</span>
-                <button class="profile-btn" id="open-profile-3">👤</button>
-            </div>
+            <div class="header"><span class="page-title">Колоды</span></div>
             <div id="decks-list"><div class="decks" id="decks"></div></div>
             <div id="deck-detail" style="display:none">
                 <div class="detail-head">
                     <button class="back-btn" id="back">←</button>
                     <span class="detail-title" id="d-title">Колода</span>
+                    <div class="detail-actions">
+                        <button class="detail-btn edit" id="edit-deck">✏️</button>
+                        <button class="detail-btn delete" id="delete-deck">🗑</button>
+                    </div>
                 </div>
                 <div class="words" id="words"></div>
                 <button class="study-btn" id="study">📖 Учить эту колоду</button>
@@ -490,32 +246,21 @@
         
         <!-- ADD -->
         <div id="v-add" class="view">
-            <div class="header">
-                <span class="page-title">Добавить</span>
-                <button class="profile-btn" id="open-profile-4">👤</button>
-            </div>
+            <div class="header"><span class="page-title">Добавить</span></div>
             <div class="form-group"><label class="form-lbl">Слово</label><input class="form-input" id="i-word" placeholder="example"></div>
             <div class="form-group"><label class="form-lbl">Транскрипция</label><input class="form-input" id="i-phon" placeholder="/ɪɡˈzæmpəl/"></div>
             <div class="form-group"><label class="form-lbl">Перевод</label><input class="form-input" id="i-trans" placeholder="пример"></div>
             <div class="form-group"><label class="form-lbl">Пример</label><input class="form-input" id="i-ex" placeholder="This is an example."></div>
             <div class="form-group">
                 <label class="form-lbl">Колода</label>
-                <select class="form-input" id="i-deck">
-                    <option value="basic">📗 Базовые</option>
-                    <option value="intermediate">📘 Средние</option>
-                    <option value="advanced">📕 Продвинутые</option>
-                    <option value="idioms">📙 Идиомы</option>
-                </select>
+                <select class="form-input" id="i-deck"></select>
             </div>
             <button class="submit-btn" id="add-btn">Добавить</button>
         </div>
         
         <!-- SETTINGS -->
         <div id="v-settings" class="view">
-            <div class="header">
-                <span class="page-title">Настройки</span>
-                <button class="profile-btn" id="open-profile-5">👤</button>
-            </div>
+            <div class="header"><span class="page-title">Настройки</span></div>
             <div class="section">
                 <div class="section-head">Обучение</div>
                 <div class="row"><span>Карточек в день</span><div class="cnt-sel"><button class="cnt-btn" data-n="10">10</button><button class="cnt-btn on" data-n="20">20</button><button class="cnt-btn" data-n="30">30</button></div></div>
@@ -524,15 +269,8 @@
             </div>
             <div class="section">
                 <div class="section-head">Данные</div>
-                <div class="row"><span>Выгрузить в облако</span><button class="cnt-btn" id="sync-up">☁️ ↑</button></div>
-                <div class="row"><span>Загрузить из облака</span><button class="cnt-btn" id="sync-down">☁️ ↓</button></div>
-                <div class="row"><span>Импорт</span><button class="cnt-btn" id="import">📥</button><input type="file" id="import-file" accept=".json" style="display:none"></div>
-                <div class="row"><span>Экспорт</span><button class="cnt-btn" id="export">📤</button></div>
-                <div class="row"><span>Сброс</span><button class="cnt-btn danger" id="reset">🗑</button></div>
-            </div>
-            <div class="section">
-                <div class="section-head">Приложение</div>
-                <div class="row"><span>На главный экран</span><button class="cnt-btn" id="add-home">📲 Добавить</button></div>
+                <div class="row"><span>Синхронизация</span><button class="cnt-btn" id="sync">☁️</button></div>
+                <div class="row"><span>Сброс прогресса</span><button class="cnt-btn danger" id="reset">🗑</button></div>
             </div>
         </div>
     </div>
@@ -547,23 +285,15 @@
     
     <div class="toast" id="toast"></div>
     
-    <!-- Модальное окно редактирования слова -->
+    <!-- Modal: Edit Word -->
     <div class="modal-overlay" id="edit-modal">
         <div class="modal">
-            <div class="modal-title">Редактировать</div>
+            <div class="modal-title">Редактировать слово</div>
             <div class="form-group"><label class="form-lbl">Слово</label><input class="form-input" id="e-word"></div>
             <div class="form-group"><label class="form-lbl">Транскрипция</label><input class="form-input" id="e-phon"></div>
             <div class="form-group"><label class="form-lbl">Перевод</label><input class="form-input" id="e-trans"></div>
             <div class="form-group"><label class="form-lbl">Пример</label><input class="form-input" id="e-ex"></div>
-            <div class="form-group">
-                <label class="form-lbl">Колода</label>
-                <select class="form-input" id="e-deck">
-                    <option value="basic">📗 Базовые</option>
-                    <option value="intermediate">📘 Средние</option>
-                    <option value="advanced">📕 Продвинутые</option>
-                    <option value="idioms">📙 Идиомы</option>
-                </select>
-            </div>
+            <div class="form-group"><label class="form-lbl">Колода</label><select class="form-input" id="e-deck"></select></div>
             <div class="modal-btns">
                 <button class="modal-btn cancel" id="edit-cancel">Отмена</button>
                 <button class="modal-btn delete" id="edit-delete">🗑</button>
@@ -572,610 +302,442 @@
         </div>
     </div>
     
+    <!-- Modal: Create/Edit Deck -->
+    <div class="modal-overlay" id="deck-modal">
+        <div class="modal">
+            <div class="modal-title" id="deck-modal-title">Новая колода</div>
+            <div class="form-group"><label class="form-lbl">Название</label><input class="form-input" id="d-name" placeholder="Моя колода"></div>
+            <div class="form-group">
+                <label class="form-lbl">Иконка</label>
+                <div class="icon-grid" id="icon-grid"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-lbl">Цвет</label>
+                <div class="color-grid" id="color-grid"></div>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" id="deck-cancel">Отмена</button>
+                <button class="modal-btn save" id="deck-save">Создать</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
     const tg = window.Telegram?.WebApp;
-    if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); tg.disableVerticalSwipes?.(); }
-    const haptic = t => { if(!tg?.HapticFeedback)return; t==='ok'?tg.HapticFeedback.notificationOccurred('success'):t==='err'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred('light'); };
-    
-    // Хранилища Telegram (CloudStorage или DeviceStorage)
+    if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); }
+    const haptic = () => tg?.HapticFeedback?.impactOccurred('light');
     const cloud = tg?.CloudStorage;
-    const device = tg?.DeviceStorage;
     
-    const S = {
-        words: [],
-        idx: 0,
-        deck: null,
-        streak: 0,
-        today: 0,
-        startDate: null,
-        dailyStats: {},
-        mode: 'learn', // 'learn' или 'repeat'
-        decks: {
-            basic: {name:'Базовые', icon:'📗', cls:'basic'},
-            intermediate: {name:'Средние', icon:'📘', cls:'inter'},
-            advanced: {name:'Продвинутые', icon:'📕', cls:'adv'},
-            idioms: {name:'Идиомы', icon:'📙', cls:'idiom'}
-        }
+    // Иконки и цвета для колод
+    const ICONS = ['📗','📘','📕','📙','📓','📔','📚','📖','🎯','🎨','🎭','🎪','🌟','⭐','💫','✨','🔥','💎','🎁','🎀','🏆','🥇','🎖️','🌈','🌸','🌺','🍀','🌿','🌙','☀️'];
+    const COLORS = ['#4ade80','#22d3ee','#818cf8','#a78bfa','#f472b6','#fb7185','#f97316','#facc15','#a3e635','#2dd4bf','#60a5fa','#c084fc'];
+    
+    // Начальные данные
+    const defaultDecks = {
+        basic: {name:'Базовые', icon:'📗', color:'#4ade80'},
+        intermediate: {name:'Средние', icon:'📘', color:'#60a5fa'},
+        advanced: {name:'Продвинутые', icon:'📕', color:'#f472b6'},
+        idioms: {name:'Идиомы', icon:'📙', color:'#f97316'}
     };
     
-    const samples = [
-        // Basic Verbs
-        {word:'have', trans:'иметь', ex:'I <em>have</em> a car.', deck:'basic', learned:false, rev:0},
-        {word:'want', trans:'хотеть', ex:'I <em>want</em> coffee.', deck:'basic', learned:false, rev:0},
-        {word:'know', trans:'знать', ex:'I <em>know</em> the answer.', deck:'basic', learned:false, rev:0},
-        {word:'do', trans:'делать', ex:'What do you <em>do</em>?', deck:'basic', learned:false, rev:0},
-        {word:'make', trans:'делать, создавать', ex:'Let\'s <em>make</em> a cake.', deck:'basic', learned:false, rev:0},
-        {word:'take', trans:'брать', ex:'<em>Take</em> my hand.', deck:'basic', learned:false, rev:0},
-        {word:'can', trans:'мочь', ex:'I <em>can</em> swim.', deck:'basic', learned:false, rev:0},
-        {word:'work', trans:'работать', ex:'I <em>work</em> from home.', deck:'basic', learned:false, rev:0},
-        {word:'buy', trans:'купить', ex:'I want to <em>buy</em> a phone.', deck:'basic', learned:false, rev:0},
-        {word:'get', trans:'получать', ex:'Did you <em>get</em> my message?', deck:'basic', learned:false, rev:0},
-        {word:'use', trans:'использовать', ex:'Can I <em>use</em> your pen?', deck:'basic', learned:false, rev:0},
-        {word:'go', trans:'идти', ex:'Let\'s <em>go</em> home.', deck:'basic', learned:false, rev:0},
-        {word:'come', trans:'приходить', ex:'Please <em>come</em> here.', deck:'basic', learned:false, rev:0},
-        {word:'leave', trans:'уходить, оставлять', ex:'I have to <em>leave</em> now.', deck:'basic', learned:false, rev:0},
-        {word:'stop', trans:'останавливаться', ex:'<em>Stop</em> the car!', deck:'basic', learned:false, rev:0},
-        {word:'understand', trans:'понимать', ex:'I don\'t <em>understand</em>.', deck:'basic', learned:false, rev:0},
-        {word:'speak', trans:'говорить', ex:'Do you <em>speak</em> English?', deck:'basic', learned:false, rev:0},
-        {word:'say', trans:'сказать', ex:'What did you <em>say</em>?', deck:'basic', learned:false, rev:0},
-        {word:'ask', trans:'спрашивать, просить', ex:'Can I <em>ask</em> a question?', deck:'basic', learned:false, rev:0},
-        {word:'eat', trans:'есть, кушать', ex:'Let\'s <em>eat</em> lunch.', deck:'basic', learned:false, rev:0},
-        {word:'drink', trans:'пить', ex:'I <em>drink</em> tea every day.', deck:'basic', learned:false, rev:0},
-        {word:'see', trans:'видеть', ex:'I can <em>see</em> the mountain.', deck:'basic', learned:false, rev:0},
-        {word:'look', trans:'смотреть', ex:'<em>Look</em> at this!', deck:'basic', learned:false, rev:0},
-        {word:'show', trans:'показывать', ex:'<em>Show</em> me the way.', deck:'basic', learned:false, rev:0},
-        {word:'like', trans:'нравиться', ex:'I <em>like</em> pizza.', deck:'basic', learned:false, rev:0},
-        {word:'remember', trans:'помнить', ex:'I <em>remember</em> you.', deck:'basic', learned:false, rev:0},
-        {word:'forget', trans:'забывать', ex:'Don\'t <em>forget</em> your keys.', deck:'basic', learned:false, rev:0},
-        {word:'read', trans:'читать', ex:'I <em>read</em> books every night.', deck:'basic', learned:false, rev:0},
-        {word:'write', trans:'писать', ex:'Please <em>write</em> your name.', deck:'basic', learned:false, rev:0},
-        {word:'keep', trans:'держать, хранить', ex:'<em>Keep</em> it safe.', deck:'basic', learned:false, rev:0},
-        {word:'stay', trans:'оставаться', ex:'<em>Stay</em> here with me.', deck:'basic', learned:false, rev:0},
-        // Questions
-        {word:'who', trans:'кто', ex:'<em>Who</em> is that?', deck:'basic', learned:false, rev:0},
-        {word:'what', trans:'что', ex:'<em>What</em> is your name?', deck:'basic', learned:false, rev:0},
-        {word:'where', trans:'где', ex:'<em>Where</em> do you live?', deck:'basic', learned:false, rev:0},
-        {word:'when', trans:'когда', ex:'<em>When</em> is your birthday?', deck:'basic', learned:false, rev:0},
-        {word:'which', trans:'который', ex:'<em>Which</em> one do you want?', deck:'basic', learned:false, rev:0},
-        {word:'whose', trans:'чей', ex:'<em>Whose</em> bag is this?', deck:'basic', learned:false, rev:0},
-        {word:'why', trans:'почему', ex:'<em>Why</em> are you late?', deck:'basic', learned:false, rev:0},
-        {word:'how', trans:'как', ex:'<em>How</em> are you?', deck:'basic', learned:false, rev:0},
-        {word:'what time', trans:'во сколько', ex:'<em>What time</em> is it?', deck:'intermediate', learned:false, rev:0},
-        {word:'how long', trans:'как долго', ex:'<em>How long</em> does it take?', deck:'intermediate', learned:false, rev:0},
-        // Time & Place
-        {word:'only', trans:'только', ex:'I have <em>only</em> one.', deck:'basic', learned:false, rev:0},
-        {word:'for now', trans:'пока что', ex:'This is enough <em>for now</em>.', deck:'intermediate', learned:false, rev:0},
-        {word:'later', trans:'позже', ex:'See you <em>later</em>.', deck:'basic', learned:false, rev:0},
-        {word:'before', trans:'до, перед', ex:'Think <em>before</em> you speak.', deck:'basic', learned:false, rev:0},
-        {word:'after', trans:'после', ex:'Let\'s meet <em>after</em> work.', deck:'basic', learned:false, rev:0},
-        {word:'to the right', trans:'направо', ex:'Turn <em>to the right</em>.', deck:'basic', learned:false, rev:0},
-        {word:'to the left', trans:'налево', ex:'Go <em>to the left</em>.', deck:'basic', learned:false, rev:0},
-        {word:'today', trans:'сегодня', ex:'I\'m busy <em>today</em>.', deck:'basic', learned:false, rev:0},
-        {word:'tomorrow', trans:'завтра', ex:'See you <em>tomorrow</em>.', deck:'basic', learned:false, rev:0},
-        {word:'yesterday', trans:'вчера', ex:'I saw him <em>yesterday</em>.', deck:'basic', learned:false, rev:0},
-        {word:'a lot', trans:'много', ex:'I have <em>a lot</em> of work.', deck:'basic', learned:false, rev:0},
-        {word:'a little', trans:'немного', ex:'Just <em>a little</em>, please.', deck:'basic', learned:false, rev:0},
-        {word:'then', trans:'затем, тогда', ex:'We had dinner, <em>then</em> watched a movie.', deck:'basic', learned:false, rev:0},
-        {word:'unfortunately', trans:'к сожалению', ex:'<em>Unfortunately</em>, I can\'t come.', deck:'intermediate', learned:false, rev:0},
-        {word:'everything', trans:'всё', ex:'<em>Everything</em> is fine.', deck:'basic', learned:false, rev:0},
-        {word:'nothing', trans:'ничего', ex:'I have <em>nothing</em> to say.', deck:'basic', learned:false, rev:0},
-        {word:'more', trans:'больше, ещё', ex:'I need <em>more</em> time.', deck:'basic', learned:false, rev:0},
-        {word:'another', trans:'другой', ex:'Give me <em>another</em> chance.', deck:'basic', learned:false, rev:0},
-        {word:'the rest', trans:'остальное', ex:'I\'ll do <em>the rest</em>.', deck:'intermediate', learned:false, rev:0},
-        {word:'together', trans:'вместе', ex:'Let\'s go <em>together</em>.', deck:'basic', learned:false, rev:0},
-        {word:'separately', trans:'отдельно', ex:'We paid <em>separately</em>.', deck:'intermediate', learned:false, rev:0},
-        // Adjectives
-        {word:'big', trans:'большой', ex:'It\'s a <em>big</em> house.', deck:'basic', learned:false, rev:0},
-        {word:'medium', trans:'средний', ex:'I\'d like a <em>medium</em> coffee.', deck:'basic', learned:false, rev:0},
-        {word:'small', trans:'маленький', ex:'This is too <em>small</em>.', deck:'basic', learned:false, rev:0},
-        {word:'other', trans:'другой', ex:'The <em>other</em> day I saw him.', deck:'basic', learned:false, rev:0},
-        {word:'same', trans:'такой же', ex:'We have the <em>same</em> phone.', deck:'basic', learned:false, rev:0},
-        {word:'open', trans:'открытый', ex:'The door is <em>open</em>.', deck:'basic', learned:false, rev:0},
-        {word:'closed', trans:'закрытый', ex:'The shop is <em>closed</em>.', deck:'basic', learned:false, rev:0},
-        {word:'far', trans:'далеко', ex:'It\'s too <em>far</em> to walk.', deck:'basic', learned:false, rev:0},
-        {word:'near', trans:'близко', ex:'The station is <em>near</em>.', deck:'basic', learned:false, rev:0},
-        {word:'first', trans:'первый', ex:'This is my <em>first</em> time.', deck:'basic', learned:false, rev:0},
-        {word:'last', trans:'последний', ex:'It\'s the <em>last</em> chance.', deck:'basic', learned:false, rev:0},
-        {word:'next', trans:'следующий', ex:'See you <em>next</em> week.', deck:'basic', learned:false, rev:0},
-        {word:'previous', trans:'предыдущий', ex:'Check the <em>previous</em> page.', deck:'intermediate', learned:false, rev:0},
-        {word:'drunk', trans:'пьяный', ex:'He was <em>drunk</em> last night.', deck:'intermediate', learned:false, rev:0},
-        {word:'sober', trans:'трезвый', ex:'I\'m completely <em>sober</em>.', deck:'intermediate', learned:false, rev:0}
+    const defaultWords = [
+        {word:'have', trans:'иметь', ex:'I <em>have</em> a car.', deck:'basic', learned:false},
+        {word:'want', trans:'хотеть', ex:'I <em>want</em> coffee.', deck:'basic', learned:false},
+        {word:'know', trans:'знать', ex:'I <em>know</em> the answer.', deck:'basic', learned:false},
+        {word:'do', trans:'делать', ex:'What do you <em>do</em>?', deck:'basic', learned:false},
+        {word:'make', trans:'делать', ex:'Let\'s <em>make</em> a cake.', deck:'basic', learned:false},
+        {word:'take', trans:'брать', ex:'<em>Take</em> my hand.', deck:'basic', learned:false},
+        {word:'can', trans:'мочь', ex:'I <em>can</em> swim.', deck:'basic', learned:false},
+        {word:'work', trans:'работать', ex:'I <em>work</em> from home.', deck:'basic', learned:false},
+        {word:'buy', trans:'купить', ex:'I want to <em>buy</em> a phone.', deck:'basic', learned:false},
+        {word:'get', trans:'получать', ex:'Did you <em>get</em> my message?', deck:'basic', learned:false},
+        {word:'use', trans:'использовать', ex:'Can I <em>use</em> your pen?', deck:'basic', learned:false},
+        {word:'go', trans:'идти', ex:'Let\'s <em>go</em> home.', deck:'basic', learned:false},
+        {word:'come', trans:'приходить', ex:'Please <em>come</em> here.', deck:'basic', learned:false},
+        {word:'leave', trans:'уходить', ex:'I have to <em>leave</em> now.', deck:'basic', learned:false},
+        {word:'stop', trans:'останавливаться', ex:'<em>Stop</em> the car!', deck:'basic', learned:false},
+        {word:'understand', trans:'понимать', ex:'I don\'t <em>understand</em>.', deck:'basic', learned:false},
+        {word:'speak', trans:'говорить', ex:'Do you <em>speak</em> English?', deck:'basic', learned:false},
+        {word:'say', trans:'сказать', ex:'What did you <em>say</em>?', deck:'basic', learned:false},
+        {word:'ask', trans:'спрашивать', ex:'Can I <em>ask</em> a question?', deck:'basic', learned:false},
+        {word:'eat', trans:'есть', ex:'Let\'s <em>eat</em> lunch.', deck:'basic', learned:false},
+        {word:'drink', trans:'пить', ex:'I <em>drink</em> tea every day.', deck:'basic', learned:false},
+        {word:'see', trans:'видеть', ex:'I can <em>see</em> the mountain.', deck:'basic', learned:false},
+        {word:'look', trans:'смотреть', ex:'<em>Look</em> at this!', deck:'basic', learned:false},
+        {word:'show', trans:'показывать', ex:'<em>Show</em> me the way.', deck:'basic', learned:false},
+        {word:'like', trans:'нравиться', ex:'I <em>like</em> pizza.', deck:'basic', learned:false},
+        {word:'remember', trans:'помнить', ex:'I <em>remember</em> you.', deck:'basic', learned:false},
+        {word:'forget', trans:'забывать', ex:'Don\'t <em>forget</em> your keys.', deck:'basic', learned:false},
+        {word:'read', trans:'читать', ex:'I <em>read</em> books every night.', deck:'basic', learned:false},
+        {word:'write', trans:'писать', ex:'Please <em>write</em> your name.', deck:'basic', learned:false},
+        {word:'keep', trans:'хранить', ex:'<em>Keep</em> it safe.', deck:'basic', learned:false},
+        {word:'stay', trans:'оставаться', ex:'<em>Stay</em> here with me.', deck:'basic', learned:false},
+        {word:'who', trans:'кто', ex:'<em>Who</em> is that?', deck:'basic', learned:false},
+        {word:'what', trans:'что', ex:'<em>What</em> is your name?', deck:'basic', learned:false},
+        {word:'where', trans:'где', ex:'<em>Where</em> do you live?', deck:'basic', learned:false},
+        {word:'when', trans:'когда', ex:'<em>When</em> is your birthday?', deck:'basic', learned:false},
+        {word:'which', trans:'который', ex:'<em>Which</em> one do you want?', deck:'basic', learned:false},
+        {word:'whose', trans:'чей', ex:'<em>Whose</em> bag is this?', deck:'basic', learned:false},
+        {word:'why', trans:'почему', ex:'<em>Why</em> are you late?', deck:'basic', learned:false},
+        {word:'how', trans:'как', ex:'<em>How</em> are you?', deck:'basic', learned:false},
+        {word:'only', trans:'только', ex:'I have <em>only</em> one.', deck:'basic', learned:false},
+        {word:'later', trans:'позже', ex:'See you <em>later</em>.', deck:'basic', learned:false},
+        {word:'before', trans:'до, перед', ex:'Think <em>before</em> you speak.', deck:'basic', learned:false},
+        {word:'after', trans:'после', ex:'Let\'s meet <em>after</em> work.', deck:'basic', learned:false},
+        {word:'today', trans:'сегодня', ex:'I\'m busy <em>today</em>.', deck:'basic', learned:false},
+        {word:'tomorrow', trans:'завтра', ex:'See you <em>tomorrow</em>.', deck:'basic', learned:false},
+        {word:'yesterday', trans:'вчера', ex:'I saw him <em>yesterday</em>.', deck:'basic', learned:false},
+        {word:'together', trans:'вместе', ex:'Let\'s go <em>together</em>.', deck:'basic', learned:false},
+        {word:'big', trans:'большой', ex:'It\'s a <em>big</em> house.', deck:'basic', learned:false},
+        {word:'small', trans:'маленький', ex:'This is too <em>small</em>.', deck:'basic', learned:false},
+        {word:'open', trans:'открытый', ex:'The door is <em>open</em>.', deck:'basic', learned:false},
+        {word:'closed', trans:'закрытый', ex:'The shop is <em>closed</em>.', deck:'basic', learned:false},
+        {word:'far', trans:'далеко', ex:'It\'s too <em>far</em> to walk.', deck:'basic', learned:false},
+        {word:'near', trans:'близко', ex:'The station is <em>near</em>.', deck:'basic', learned:false},
+        {word:'first', trans:'первый', ex:'This is my <em>first</em> time.', deck:'basic', learned:false},
+        {word:'last', trans:'последний', ex:'It\'s the <em>last</em> chance.', deck:'basic', learned:false},
+        {word:'next', trans:'следующий', ex:'See you <em>next</em> week.', deck:'basic', learned:false},
+        {word:'what time', trans:'во сколько', ex:'<em>What time</em> is it?', deck:'intermediate', learned:false},
+        {word:'how long', trans:'как долго', ex:'<em>How long</em> does it take?', deck:'intermediate', learned:false},
+        {word:'for now', trans:'пока что', ex:'This is enough <em>for now</em>.', deck:'intermediate', learned:false},
+        {word:'unfortunately', trans:'к сожалению', ex:'<em>Unfortunately</em>, I can\'t come.', deck:'intermediate', learned:false},
+        {word:'everything', trans:'всё', ex:'<em>Everything</em> is fine.', deck:'intermediate', learned:false},
+        {word:'nothing', trans:'ничего', ex:'I have <em>nothing</em> to say.', deck:'intermediate', learned:false},
+        {word:'the rest', trans:'остальное', ex:'I\'ll do <em>the rest</em>.', deck:'intermediate', learned:false},
+        {word:'separately', trans:'отдельно', ex:'We paid <em>separately</em>.', deck:'intermediate', learned:false},
+        {word:'previous', trans:'предыдущий', ex:'Check the <em>previous</em> page.', deck:'intermediate', learned:false},
+        {word:'drunk', trans:'пьяный', ex:'He was <em>drunk</em> last night.', deck:'intermediate', learned:false},
+        {word:'sober', trans:'трезвый', ex:'I\'m completely <em>sober</em>.', deck:'intermediate', learned:false}
     ];
     
-    const $=id=>document.getElementById(id);
+    let S = {
+        words: [],
+        decks: {},
+        stats: { streak:0, daily:{} },
+        mode: 'learn',
+        currentDeck: null
+    };
     
-    // Сохранение
+    const $=id=>document.getElementById(id);
+    let shuffled=[], idx=0, editingWord=null, editingDeck=null, selectedIcon=ICONS[0], selectedColor=COLORS[0];
+    
+    // Save/Load
     function save(){
         const data = JSON.stringify(S);
-        // Локально всегда
-        try { localStorage.setItem('wordly', data); } catch(e){}
-        
-        // В облако Telegram
-        if(cloud){
-            cloud.setItem('wordly_data', data, (err)=>{});
-        }
-        // Или в DeviceStorage
-        if(device && !cloud){
-            device.setItem('wordly_data', data, (err)=>{});
-        }
+        try { localStorage.setItem('wordly2', data); } catch(e){}
+        if(cloud) cloud.setItem('wordly2_data', data, ()=>{});
     }
     
-    // Загрузка
     function load(){
-        // Пробуем CloudStorage
+        const local = localStorage.getItem('wordly2');
+        if(local){
+            try { Object.assign(S, JSON.parse(local)); } catch(e){}
+        }
+        if(!S.words.length){
+            S.words = [...defaultWords];
+            S.decks = {...defaultDecks};
+        }
+        if(!Object.keys(S.decks).length) S.decks = {...defaultDecks};
+        
         if(cloud){
-            cloud.getItem('wordly_data', (err, value)=>{
-                if(!err && value){
-                    try { Object.assign(S, JSON.parse(value)); update(); return; } catch(e){}
+            cloud.getItem('wordly2_data', (err, val)=>{
+                if(!err && val){
+                    try { 
+                        const d = JSON.parse(val);
+                        if(d.words?.length > S.words.length) Object.assign(S, d);
+                    } catch(e){}
                 }
-                loadLocal();
-            });
-        // Пробуем DeviceStorage
-        } else if(device){
-            device.getItem('wordly_data', (err, value)=>{
-                if(!err && value){
-                    try { Object.assign(S, JSON.parse(value)); update(); return; } catch(e){}
-                }
-                loadLocal();
+                update();
             });
         } else {
-            loadLocal();
+            update();
         }
     }
     
-    // Локальная загрузка как фоллбэк
-    function loadLocal(){
-        const d = localStorage.getItem('wordly');
-        if(d){
-            try {
-                Object.assign(S, JSON.parse(d));
-            } catch(e){}
-        } else {
-            S.words = [...samples];
-            S.startDate = new Date().toISOString();
-        }
-        update();
-    }
-    const byDeck=k=>S.words.filter(w=>w.deck===k);
-    const study=()=>{
-        let words;
-        if(S.deck){
-            words = S.words.filter(w=>w.deck===S.deck);
-        } else {
-            words = S.words;
-        }
-        // В режиме 'learn' — только невыученные, в 'repeat' — все
-        if(S.mode === 'learn'){
-            words = words.filter(w=>!w.learned);
-        }
-        return words;
-    };
-    const todayKey=()=>new Date().toISOString().split('T')[0];
-    
-    // Перемешивание массива (Fisher-Yates)
+    // Shuffle
     function shuffle(arr){
-        const a = [...arr];
-        for(let i = a.length - 1; i > 0; i--){
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
+        const a=[...arr];
+        for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
         return a;
     }
-    
-    // Текущая перемешанная колода
-    let shuffledCards = [];
-    let shuffleIdx = 0;
-    
-    function reshuffleCards(){
-        shuffledCards = shuffle(study());
-        shuffleIdx = 0;
+    function reshuffle(){
+        let words = S.currentDeck ? S.words.filter(w=>w.deck===S.currentDeck) : S.words;
+        if(S.mode==='learn') words = words.filter(w=>!w.learned);
+        shuffled = shuffle(words);
+        idx = 0;
     }
     
+    // UI
     function update(){
-        const t=S.words.length, l=S.words.filter(w=>w.learned).length;
-        const remaining = study().length;
-        $('remaining').textContent = remaining;
         renderDecks();
+        renderDeckSelects();
         showCard();
-        updateProgress();
+        updateStats();
     }
-    
-    function updateProgress(){
-        const t=S.words.length, l=S.words.filter(w=>w.learned).length;
-        const p=t?Math.round(l/t*100):0;
-        
-        $('p-pct').textContent=p+'%';
-        $('p-fill').style.width=p+'%';
-        $('p-total').textContent=t;
-        $('p-learned').textContent=l;
-        $('p-today').textContent=S.today;
-        $('p-streak').textContent=S.streak+' дней';
-        
-        const days = Object.keys(S.dailyStats).length || 1;
-        const totalL = Object.values(S.dailyStats).reduce((a,b)=>a+(b.learned||0),0);
-        $('p-avg').textContent = Math.round(totalL / days);
-        
-        renderWeekChart();
-    }
-    
-    function renderWeekChart(){
-        const c = $('week-chart');
-        c.innerHTML = '';
-        const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-        const today = new Date();
-        const data = [];
-        
-        for(let i=6; i>=0; i--){
-            const d = new Date(today);
-            d.setDate(d.getDate() - i);
-            const key = d.toISOString().split('T')[0];
-            const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
-            data.push({
-                name: days[dayIdx],
-                count: S.dailyStats[key]?.learned || 0,
-                isToday: i === 0
-            });
-        }
-        
-        const max = Math.max(...data.map(d=>d.count), 1);
-        
-        data.forEach(d=>{
-            const pct = (d.count / max) * 100;
-            const div = document.createElement('div');
-            div.className = 'week-day';
-            div.innerHTML = `
-                <div class="week-bar-wrap">
-                    <div class="week-bar ${d.isToday?'today':''}" style="height:${Math.max(pct,4)}%"></div>
-                </div>
-                <span class="week-lbl ${d.isToday?'today':''}">${d.name}</span>
-            `;
-            c.appendChild(div);
-        });
-    }
-    
-    function renderDecks(){
-        const c=$('decks'); c.innerHTML='';
-        Object.entries(S.decks).forEach(([k,d])=>{
-            const ws=byDeck(k), l=ws.filter(w=>w.learned).length;
-            const el=document.createElement('div');
-            el.className='deck';
-            el.innerHTML=`<div class="deck-icon ${d.cls}">${d.icon}</div><div class="deck-info"><div class="deck-name">${d.name}</div><div class="deck-meta">${ws.length} слов · ${l} выучено</div></div><div class="deck-arr">›</div>`;
-            el.onclick=()=>openDeck(k);
-            c.appendChild(el);
-        });
-    }
-    
-    let editingWordIdx = null;
-    
-    function openDeck(k){
-        haptic(); S.deck=k;
-        $('decks-list').style.display='none';
-        $('deck-detail').style.display='block';
-        $('d-title').textContent=S.decks[k].name;
-        const c=$('words'); c.innerHTML='';
-        const ws=byDeck(k);
-        if(!ws.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Пусто</div><div class="empty-sub">Добавь слова</div></div>'; return; }
-        ws.forEach((w,i)=>{
-            const st=w.learned?'learned':w.rev>0?'learning':'';
-            const el=document.createElement('div');
-            el.className='word-item';
-            el.innerHTML=`<div><div class="word-w">${w.word}</div><div class="word-t">${w.trans}</div></div><div class="word-status ${st}"></div>`;
-            el.onclick=()=>openEditModal(w);
-            c.appendChild(el);
-        });
-    }
-    
-    function openEditModal(w){
-        haptic();
-        editingWordIdx = S.words.indexOf(w);
-        $('e-word').value = w.word || '';
-        $('e-phon').value = w.phon || '';
-        $('e-trans').value = w.trans || '';
-        $('e-ex').value = w.ex || '';
-        $('e-deck').value = w.deck || 'basic';
-        $('edit-modal').classList.add('show');
-    }
-    
-    function closeEditModal(){
-        $('edit-modal').classList.remove('show');
-        editingWordIdx = null;
-    }
-    
-    $('edit-cancel')?.addEventListener('click', closeEditModal);
-    
-    $('edit-modal')?.addEventListener('click', (e)=>{
-        if(e.target.id === 'edit-modal') closeEditModal();
-    });
-    
-    $('edit-save')?.addEventListener('click', ()=>{
-        if(editingWordIdx === null) return;
-        const w = S.words[editingWordIdx];
-        w.word = $('e-word').value.trim();
-        w.phon = $('e-phon').value.trim();
-        w.trans = $('e-trans').value.trim();
-        w.ex = $('e-ex').value.trim();
-        w.deck = $('e-deck').value;
-        save();
-        closeEditModal();
-        if(S.deck) openDeck(S.deck);
-        toast('Сохранено','ok');
-    });
-    
-    $('edit-delete')?.addEventListener('click', ()=>{
-        if(editingWordIdx === null) return;
-        if(confirm('Удалить это слово?')){
-            S.words.splice(editingWordIdx, 1);
-            save();
-            closeEditModal();
-            if(S.deck) openDeck(S.deck);
-            reshuffleCards();
-            update();
-            toast('Удалено','ok');
-        }
-    });
-    
-    function closeDeck(){ haptic(); $('decks-list').style.display='block'; $('deck-detail').style.display='none'; S.deck=null; }
     
     function showCard(){
-        const ws = study();
-        if(!ws.length){ 
-            if(S.mode === 'learn'){
-                $('c-word').textContent='Всё выучено! 🎉'; 
-                $('c-trans').textContent='Переключись на повторение';
-            } else {
-                $('c-word').textContent='Нет слов'; 
-                $('c-trans').textContent='Добавь новые';
-            }
-            $('c-phon').textContent=''; 
-            $('c-cat').textContent='—'; 
-            $('c-ex').textContent='';
-            shuffledCards = [];
-            return; 
+        const words = S.currentDeck ? S.words.filter(w=>w.deck===S.currentDeck) : S.words;
+        const active = S.mode==='learn' ? words.filter(w=>!w.learned) : words;
+        $('remaining').textContent = active.length;
+        
+        if(!shuffled.length || idx>=shuffled.length) reshuffle();
+        if(!shuffled.length){
+            $('c-word').textContent = S.mode==='learn' ? 'Всё выучено! 🎉' : 'Нет слов';
+            $('c-trans').textContent = S.mode==='learn' ? 'Переключись на повторение' : 'Добавь новые';
+            $('c-phon').textContent=''; $('c-cat').textContent='—'; $('c-ex').textContent='';
+            return;
         }
-        
-        // Перемешиваем если нужно
-        if(shuffledCards.length === 0 || shuffleIdx >= shuffledCards.length){
-            reshuffleCards();
-        }
-        
-        // Проверяем что текущая карта ещё валидна
-        const currentCard = shuffledCards[shuffleIdx];
-        if(!currentCard || (S.mode === 'learn' && currentCard.learned)){
-            reshuffleCards();
-        }
-        
-        if(shuffledCards.length === 0) return;
-        
-        const w = shuffledCards[shuffleIdx];
-        $('c-word').textContent=w.word;
-        $('c-phon').textContent=w.phon||'';
-        $('c-cat').textContent=S.decks[w.deck]?.name||'—';
-        $('c-trans').textContent=w.trans;
-        $('c-ex').innerHTML=w.ex||'';
+        const w = shuffled[idx];
+        $('c-word').textContent = w.word;
+        $('c-phon').textContent = w.phon || '';
+        $('c-cat').textContent = S.decks[w.deck]?.name || '—';
+        $('c-trans').textContent = w.trans;
+        $('c-ex').innerHTML = w.ex || '';
         $('card').classList.remove('flipped');
     }
     
-    function next(){ 
-        shuffleIdx++;
-        if(shuffleIdx >= shuffledCards.length){
-            reshuffleCards();
+    function next(){ idx++; if(idx>=shuffled.length) reshuffle(); showCard(); }
+    function cur(){ return shuffled[idx]; }
+    
+    function renderDecks(){
+        const c = $('decks');
+        c.innerHTML = '';
+        Object.entries(S.decks).forEach(([k,d])=>{
+            const cnt = S.words.filter(w=>w.deck===k).length;
+            const el = document.createElement('div');
+            el.className = 'deck';
+            el.style.borderColor = d.color || '#7c6aef';
+            el.innerHTML = `<div class="deck-icon">${d.icon||'📚'}</div><div class="deck-name">${d.name}</div><div class="deck-cnt">${cnt} слов</div>`;
+            el.onclick = () => openDeck(k);
+            c.appendChild(el);
+        });
+        // Add button
+        const add = document.createElement('div');
+        add.className = 'deck deck-add';
+        add.innerHTML = '<div class="deck-icon">➕</div><div class="deck-name">Создать</div>';
+        add.onclick = () => openDeckModal();
+        c.appendChild(add);
+    }
+    
+    function renderDeckSelects(){
+        const opts = Object.entries(S.decks).map(([k,d])=>`<option value="${k}">${d.icon} ${d.name}</option>`).join('');
+        $('i-deck').innerHTML = opts;
+        $('e-deck').innerHTML = opts;
+    }
+    
+    function openDeck(k){
+        haptic(); S.currentDeck = k;
+        $('decks-list').style.display = 'none';
+        $('deck-detail').style.display = 'block';
+        $('d-title').textContent = S.decks[k]?.name || k;
+        
+        const c = $('words'); c.innerHTML = '';
+        const words = S.words.filter(w=>w.deck===k);
+        if(!words.length){
+            c.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Пусто</div></div>';
+            return;
         }
-        showCard(); 
+        words.forEach(w=>{
+            const el = document.createElement('div');
+            el.className = 'word-item';
+            el.innerHTML = `<div><div class="word-w">${w.word}</div><div class="word-t">${w.trans}</div></div><div class="word-status ${w.learned?'learned':''}"></div>`;
+            el.onclick = () => openEditWord(w);
+            c.appendChild(el);
+        });
     }
     
-    function cur(){ 
-        return shuffledCards.length ? shuffledCards[shuffleIdx] : null; 
+    function closeDeck(){
+        haptic();
+        $('decks-list').style.display = 'block';
+        $('deck-detail').style.display = 'none';
+        S.currentDeck = null;
     }
     
-    $('card').onclick=function(){ this.classList.toggle('flipped'); haptic(); };
+    // Word modal
+    function openEditWord(w){
+        haptic(); editingWord = w;
+        $('e-word').value = w.word||'';
+        $('e-phon').value = w.phon||'';
+        $('e-trans').value = w.trans||'';
+        $('e-ex').value = w.ex||'';
+        $('e-deck').value = w.deck||'basic';
+        $('edit-modal').classList.add('show');
+    }
     
-    $('b-yes').onclick=()=>{
-        const w=cur(); if(!w)return;
-        haptic('ok');
-        const i=S.words.findIndex(x=>x.word===w.word&&x.deck===w.deck);
-        if(i>=0){ S.words[i].learned=true; S.words[i].rev++; }
-        S.today++;
-        const key = todayKey();
-        if(!S.dailyStats[key]) S.dailyStats[key] = {learned:0};
-        S.dailyStats[key].learned++;
-        save(); next(); update();
-        toast('Отлично! ✓','ok');
+    // Deck modal
+    function openDeckModal(key=null){
+        haptic(); editingDeck = key;
+        $('deck-modal-title').textContent = key ? 'Редактировать колоду' : 'Новая колода';
+        $('deck-save').textContent = key ? 'Сохранить' : 'Создать';
+        
+        if(key && S.decks[key]){
+            $('d-name').value = S.decks[key].name;
+            selectedIcon = S.decks[key].icon || ICONS[0];
+            selectedColor = S.decks[key].color || COLORS[0];
+        } else {
+            $('d-name').value = '';
+            selectedIcon = ICONS[0];
+            selectedColor = COLORS[0];
+        }
+        renderIconGrid();
+        renderColorGrid();
+        $('deck-modal').classList.add('show');
+    }
+    
+    function renderIconGrid(){
+        $('icon-grid').innerHTML = ICONS.map(i=>`<button class="icon-opt ${i===selectedIcon?'on':''}" data-i="${i}">${i}</button>`).join('');
+        $('icon-grid').querySelectorAll('.icon-opt').forEach(b=>b.onclick=()=>{
+            selectedIcon = b.dataset.i;
+            renderIconGrid();
+        });
+    }
+    
+    function renderColorGrid(){
+        $('color-grid').innerHTML = COLORS.map(c=>`<button class="color-opt ${c===selectedColor?'on':''}" data-c="${c}" style="background:${c}"></button>`).join('');
+        $('color-grid').querySelectorAll('.color-opt').forEach(b=>b.onclick=()=>{
+            selectedColor = b.dataset.c;
+            renderColorGrid();
+        });
+    }
+    
+    function updateStats(){
+        const today = new Date().toISOString().split('T')[0];
+        $('p-total').textContent = S.words.length;
+        $('p-learned').textContent = S.words.filter(w=>w.learned).length;
+        $('p-today').textContent = S.stats.daily?.[today] || 0;
+        $('p-streak').textContent = (S.stats.streak||0) + ' дней';
+        
+        // Week chart
+        const chart = $('week-chart'); chart.innerHTML = '';
+        const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+        for(let i=6;i>=0;i--){
+            const d = new Date(); d.setDate(d.getDate()-i);
+            const key = d.toISOString().split('T')[0];
+            const val = S.stats.daily?.[key] || 0;
+            const h = Math.min(val*10, 60);
+            chart.innerHTML += `<div class="week-bar"><div class="week-bar-fill" style="height:${h}px"></div><span>${days[d.getDay()||7-1]}</span></div>`;
+        }
+    }
+    
+    function recordProgress(){
+        const today = new Date().toISOString().split('T')[0];
+        if(!S.stats.daily) S.stats.daily = {};
+        S.stats.daily[today] = (S.stats.daily[today]||0) + 1;
+        save();
+    }
+    
+    // Events
+    $('card').onclick = () => { haptic(); $('card').classList.toggle('flipped'); };
+    $('b-yes').onclick = () => { haptic(); const w=cur(); if(w){ w.learned=true; recordProgress(); } next(); };
+    $('b-no').onclick = () => { haptic(); const w=cur(); if(w) w.learned=false; next(); };
+    $('b-skip').onclick = () => { haptic(); next(); };
+    
+    $('mode-learn').onclick = () => { haptic(); S.mode='learn'; $('mode-learn').classList.add('on'); $('mode-repeat').classList.remove('on'); reshuffle(); showCard(); };
+    $('mode-repeat').onclick = () => { haptic(); S.mode='repeat'; $('mode-repeat').classList.add('on'); $('mode-learn').classList.remove('on'); reshuffle(); showCard(); };
+    
+    $('back').onclick = closeDeck;
+    $('study').onclick = () => { haptic(); document.querySelector('[data-v="home"]').click(); reshuffle(); showCard(); };
+    $('edit-deck').onclick = () => openDeckModal(S.currentDeck);
+    $('delete-deck').onclick = () => {
+        if(!S.currentDeck) return;
+        if(confirm('Удалить колоду и все слова в ней?')){
+            S.words = S.words.filter(w=>w.deck!==S.currentDeck);
+            delete S.decks[S.currentDeck];
+            save(); closeDeck(); update();
+            toast('Колода удалена','ok');
+        }
     };
     
-    $('b-no').onclick=()=>{
-        const w=cur(); if(!w)return;
-        haptic('err');
-        const i=S.words.findIndex(x=>x.word===w.word&&x.deck===w.deck);
-        if(i>=0) S.words[i].rev++;
-        save(); next();
-        toast('Повторим','err');
+    // Add word
+    $('add-btn').onclick = () => {
+        const word = $('i-word').value.trim();
+        const trans = $('i-trans').value.trim();
+        if(!word||!trans){ toast('Заполни слово и перевод','err'); return; }
+        S.words.push({ word, trans, phon:$('i-phon').value.trim(), ex:$('i-ex').value.trim(), deck:$('i-deck').value, learned:false });
+        save(); reshuffle(); update();
+        $('i-word').value=''; $('i-phon').value=''; $('i-trans').value=''; $('i-ex').value='';
+        toast('Добавлено','ok');
     };
     
-    $('b-skip').onclick=()=>{ haptic(); next(); };
-    $('back').onclick=closeDeck;
-    $('study').onclick=()=>{ haptic('ok'); document.querySelector('[data-v="home"]').click(); toast(`Учим: ${S.decks[S.deck].name}`,'ok'); };
+    // Edit word modal
+    $('edit-cancel').onclick = () => $('edit-modal').classList.remove('show');
+    $('edit-save').onclick = () => {
+        if(!editingWord) return;
+        editingWord.word = $('e-word').value.trim();
+        editingWord.phon = $('e-phon').value.trim();
+        editingWord.trans = $('e-trans').value.trim();
+        editingWord.ex = $('e-ex').value.trim();
+        editingWord.deck = $('e-deck').value;
+        save(); $('edit-modal').classList.remove('show');
+        if(S.currentDeck) openDeck(S.currentDeck);
+        toast('Сохранено','ok');
+    };
+    $('edit-delete').onclick = () => {
+        if(!editingWord) return;
+        if(confirm('Удалить слово?')){
+            S.words = S.words.filter(w=>w!==editingWord);
+            save(); $('edit-modal').classList.remove('show');
+            reshuffle(); update();
+            if(S.currentDeck) openDeck(S.currentDeck);
+            toast('Удалено','ok');
+        }
+    };
+    $('edit-modal').onclick = e => { if(e.target.id==='edit-modal') $('edit-modal').classList.remove('show'); };
     
-    // Переключение режимов
-    $('mode-learn').onclick=()=>{
-        haptic();
-        S.mode = 'learn';
-        reshuffleCards();
-        $('mode-learn').classList.add('on');
-        $('mode-repeat').classList.remove('on');
+    // Deck modal
+    $('deck-cancel').onclick = () => $('deck-modal').classList.remove('show');
+    $('deck-save').onclick = () => {
+        const name = $('d-name').value.trim();
+        if(!name){ toast('Введи название','err'); return; }
+        
+        if(editingDeck){
+            S.decks[editingDeck].name = name;
+            S.decks[editingDeck].icon = selectedIcon;
+            S.decks[editingDeck].color = selectedColor;
+        } else {
+            const key = 'deck_' + Date.now();
+            S.decks[key] = { name, icon:selectedIcon, color:selectedColor };
+        }
+        save(); $('deck-modal').classList.remove('show');
         update();
+        toast(editingDeck ? 'Сохранено' : 'Колода создана','ok');
     };
-    $('mode-repeat').onclick=()=>{
-        haptic();
-        S.mode = 'repeat';
-        reshuffleCards();
-        $('mode-repeat').classList.add('on');
-        $('mode-learn').classList.remove('on');
-        update();
-    };
+    $('deck-modal').onclick = e => { if(e.target.id==='deck-modal') $('deck-modal').classList.remove('show'); };
     
-    document.querySelectorAll('.nav-item').forEach(n=>{
-        n.onclick=()=>{
-            haptic();
-            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
-            n.classList.add('on');
-            document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-            $('v-'+n.dataset.v).classList.add('on');
-            if(n.dataset.v!=='decks') closeDeck();
-        };
+    // Nav
+    document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>{
+        haptic();
+        document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');
+        document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+        $(('v-'+b.dataset.v)).classList.add('on');
+        if(b.dataset.v==='decks') closeDeck();
     });
     
-    $('add-btn').onclick=()=>{
-        const word=$('i-word').value.trim(), trans=$('i-trans').value.trim();
-        if(!word||!trans){ haptic('err'); toast('Заполни слово и перевод','err'); return; }
-        S.words.push({word, phon:$('i-phon').value.trim(), trans, ex:$('i-ex').value.trim().replace(new RegExp(word,'gi'),`<em>${word}</em>`), deck:$('i-deck').value, learned:false, rev:0});
-        save(); update();
-        ['i-word','i-phon','i-trans','i-ex'].forEach(id=>$(id).value='');
-        haptic('ok'); toast('Добавлено! ✓','ok');
-    };
-    
+    // Settings
     document.querySelectorAll('.toggle').forEach(t=>t.onclick=()=>{ haptic(); t.classList.toggle('on'); });
     document.querySelectorAll('.cnt-btn[data-n]').forEach(b=>b.onclick=()=>{ haptic(); document.querySelectorAll('.cnt-btn[data-n]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
     
-    $('export')?.addEventListener('click',()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)])); a.download='wordly.json'; a.click(); toast('Экспорт','ok'); });
-    
-    // Импорт JSON
-    $('import')?.addEventListener('click',()=>{ $('import-file').click(); });
-    $('import-file')?.addEventListener('change',(e)=>{
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev)=>{
-            try {
-                const data = JSON.parse(ev.target.result);
-                if(data.words && Array.isArray(data.words)){
-                    // Мержим слова
-                    const existingWords = new Set(S.words.map(w=>w.word.toLowerCase()));
-                    let added = 0;
-                    data.words.forEach(w=>{
-                        if(!existingWords.has(w.word.toLowerCase())){
-                            S.words.push(w);
-                            added++;
-                        }
-                    });
-                    // Мержим колоды
-                    if(data.decks){
-                        Object.assign(S.decks, data.decks);
-                    }
-                    
-                    // Сохраняем локально
-                    const dataStr = JSON.stringify(S);
-                    try { localStorage.setItem('wordly', dataStr); } catch(e){}
-                    
-                    // Сохраняем в облако напрямую
-                    if(cloud){
-                        cloud.setItem('wordly_data', dataStr, (err)=>{
-                            if(!err){
-                                toast(`Добавлено ${added} слов ☁️`,'ok');
-                            } else {
-                                toast(`Добавлено ${added} слов (локально)`,'ok');
-                            }
-                        });
-                    } else {
-                        toast(`Добавлено ${added} слов`,'ok');
-                    }
-                    
-                    reshuffleCards();
-                    update();
-                } else {
-                    toast('Неверный формат','err');
-                }
-            } catch(err){
-                toast('Ошибка чтения','err');
-            }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
-    });
-    $('reset')?.addEventListener('click',()=>{ 
-        if(confirm('Сбросить все данные?')){ 
-            localStorage.removeItem('wordly'); 
-            if(cloud) cloud.removeItem('wordly_data', ()=>{});
-            location.reload(); 
-        }
-    });
-    // Выгрузить в облако
-    $('sync-up')?.addEventListener('click',()=>{
+    $('sync').onclick = () => {
         haptic();
         if(cloud){
-            save();
-            toast('Выгружено в облако ☁️↑','ok');
-        } else if(device){
-            save();
-            toast('Сохранено на устройство 📱','ok');
-        } else {
-            toast('Откройте в Telegram','err');
-        }
-    });
-    
-    // Загрузить из облака
-    $('sync-down')?.addEventListener('click',()=>{
-        haptic();
-        if(cloud){
-            cloud.getItem('wordly_data', (err, value)=>{
-                if(!err && value){
-                    try {
-                        Object.assign(S, JSON.parse(value));
-                        save(); // сохраняем локально тоже
-                        reshuffleCards();
-                        update();
-                        toast('Загружено из облака ☁️↓','ok');
-                    } catch(e){
-                        toast('Ошибка загрузки','err');
-                    }
-                } else {
-                    toast('В облаке пусто','err');
-                }
-            });
-        } else if(device){
-            device.getItem('wordly_data', (err, value)=>{
-                if(!err && value){
-                    try {
-                        Object.assign(S, JSON.parse(value));
-                        reshuffleCards();
-                        update();
-                        toast('Загружено с устройства 📱','ok');
-                    } catch(e){
-                        toast('Ошибка загрузки','err');
-                    }
-                } else {
-                    toast('Нет сохранённых данных','err');
-                }
+            const data = JSON.stringify(S);
+            cloud.setItem('wordly2_data', data, (err)=>{
+                toast(err ? 'Ошибка' : 'Синхронизировано ☁️', err ? 'err' : 'ok');
             });
         } else {
             toast('Откройте в Telegram','err');
         }
-    });
+    };
     
-    // Добавить на главный экран
-    $('add-home')?.addEventListener('click',()=>{
-        haptic();
-        if(tg?.addToHomeScreen){
-            tg.addToHomeScreen();
-        } else {
-            toast('Обновите Telegram','err');
+    $('reset').onclick = () => {
+        if(confirm('Сбросить весь прогресс?')){
+            S.words.forEach(w=>w.learned=false);
+            S.stats = { streak:0, daily:{} };
+            save(); update();
+            toast('Прогресс сброшен','ok');
         }
-    });
-    
-    // Проверяем статус при загрузке
-    if(tg?.checkHomeScreenStatus){
-        tg.checkHomeScreenStatus(function(status){
-            const btn = $('add-home');
-            if(btn){
-                if(status === 'added'){
-                    btn.textContent = '✅ Добавлено';
-                    btn.disabled = true;
-                } else if(status === 'unsupported'){
-                    btn.textContent = '❌ Недоступно';
-                    btn.disabled = true;
-                }
-            }
-        });
-    }
+    };
     
     function toast(m,t='ok'){ const el=$('toast'); el.textContent=m; el.className=`toast ${t} show`; setTimeout(()=>el.classList.remove('show'),2500); }
     
