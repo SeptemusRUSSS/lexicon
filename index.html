@@ -576,10 +576,9 @@
     if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); tg.disableVerticalSwipes?.(); }
     const haptic = t => { if(!tg?.HapticFeedback)return; t==='ok'?tg.HapticFeedback.notificationOccurred('success'):t==='err'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred('light'); };
     
-    // Проверка CloudStorage
+    // Хранилища Telegram (CloudStorage или DeviceStorage)
     const cloud = tg?.CloudStorage;
-    console.log('Telegram WebApp:', tg ? 'OK' : 'NOT FOUND');
-    console.log('CloudStorage:', cloud ? 'OK' : 'NOT FOUND');
+    const device = tg?.DeviceStorage;
     
     const S = {
         words: [],
@@ -608,43 +607,39 @@
     
     const $=id=>document.getElementById(id);
     
-    // Сохранение в облако Telegram
+    // Сохранение
     function save(){
         const data = JSON.stringify(S);
-        // Сохраняем локально как бэкап
-        try {
-            localStorage.setItem('wordly', data);
-            console.log('LocalStorage: saved');
-        } catch(e){
-            console.log('LocalStorage error:', e);
-        }
-        // Сохраняем в облако Telegram
+        // Локально всегда
+        try { localStorage.setItem('wordly', data); } catch(e){}
+        
+        // В облако Telegram
         if(cloud){
-            cloud.setItem('wordly_data', data, (err)=>{
-                if(err){
-                    console.log('Cloud save error:', err);
-                } else {
-                    console.log('CloudStorage: saved');
-                }
-            });
+            cloud.setItem('wordly_data', data, (err)=>{});
+        }
+        // Или в DeviceStorage
+        if(device && !cloud){
+            device.setItem('wordly_data', data, (err)=>{});
         }
     }
     
-    // Загрузка из облака Telegram
+    // Загрузка
     function load(){
+        // Пробуем CloudStorage
         if(cloud){
             cloud.getItem('wordly_data', (err, value)=>{
                 if(!err && value){
-                    try {
-                        Object.assign(S, JSON.parse(value));
-                        update();
-                        toast('Синхронизировано ☁️','ok');
-                    } catch(e){
-                        loadLocal();
-                    }
-                } else {
-                    loadLocal();
+                    try { Object.assign(S, JSON.parse(value)); update(); return; } catch(e){}
                 }
+                loadLocal();
+            });
+        // Пробуем DeviceStorage
+        } else if(device){
+            device.getItem('wordly_data', (err, value)=>{
+                if(!err && value){
+                    try { Object.assign(S, JSON.parse(value)); update(); return; } catch(e){}
+                }
+                loadLocal();
             });
         } else {
             loadLocal();
@@ -990,6 +985,8 @@
                         Object.assign(S.decks, data.decks);
                     }
                     save();
+                    // Повторно сохраняем через секунду для надёжности
+                    setTimeout(()=>{ save(); }, 1000);
                     reshuffleCards();
                     update();
                     toast(`Добавлено ${added} слов`,'ok');
